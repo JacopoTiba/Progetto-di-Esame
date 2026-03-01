@@ -1,0 +1,451 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --cream: #faf4eb;
+  --cream-light: #fdf9f3;
+  --warm-brown: #4a3728;
+  --warm-brown-light: #7a6555;
+  --gold: #c9a96e;
+  --gold-soft: #dcc9a1;
+  --rose-muted: #c49a8a;
+  --sage: #8a9a7a;
+  --purple-soft: #a48bb0;
+  --border-warm: #e0d5c8;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Nunito', sans-serif;
+  color: var(--warm-brown);
+  overflow: hidden;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Fullscreen Background ---------- */
+.bg-layer {
+  position: fixed;
+  inset: 0;
+  background: url('img/ghibli-bg.png') center / cover no-repeat;
+  z-index: 0;
+  filter: blur(6px) saturate(1.1);
+  transform: scale(1.05);
+}
+
+.bg-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(135deg, rgba(250, 244, 235, 0.88) 0%, rgba(250, 244, 235, 0.6) 50%, rgba(250, 244, 235, 0.3) 100%);
+}
+
+/* ---------- Page ---------- */
+.page {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+/* ---------- Top Navigation ---------- */
+.topnav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 0;
+  flex-shrink: 0;
+}
+
+.topnav-brand {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--warm-brown);
+  letter-spacing: 0.02em;
+}
+
+.topnav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-link {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--warm-brown-light);
+  text-decoration: none;
+  padding: 0.25rem 0;
+  transition: color 0.2s;
+  position: relative;
+}
+
+.nav-link:hover {
+  color: var(--warm-brown);
+}
+
+.nav-link.active {
+  color: var(--warm-brown);
+  border-bottom: 1.5px solid var(--gold);
+}
+
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--warm-brown);
+  padding: 0.25rem;
+}
+
+/* ---------- Content Area ---------- */
+.content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  min-height: 0;
+}
+
+/* ---------- Left Column — Form ---------- */
+.left-col {
+  flex: 0 0 46%;
+  max-width: 420px;
+}
+
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--gold);
+  margin-bottom: 0.75rem;
+}
+
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-weight: 700;
+  color: var(--warm-brown);
+  line-height: 1.1;
+  margin-bottom: 0.75rem;
+  text-wrap: balance;
+}
+
+.hero-sub {
+  font-size: 0.92rem;
+  color: var(--warm-brown-light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+/* ---------- Form ---------- */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--border-warm);
+  border-radius: 10px;
+  background: rgba(253, 249, 243, 0.7);
+  backdrop-filter: blur(8px);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  color: var(--warm-brown);
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.input-group input::placeholder {
+  color: var(--warm-brown-light);
+  opacity: 0.55;
+}
+
+.input-group input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.15);
+}
+
+/* Password wrapper */
+.password-wrapper {
+  position: relative;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--warm-brown-light);
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: var(--gold);
+}
+
+.password-toggle svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.forgot-link {
+  font-size: 0.8rem;
+  color: var(--rose-muted);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: var(--warm-brown);
+}
+
+/* Sign-in Button */
+.btn-signin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.85rem;
+  border: 2px solid var(--warm-brown);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--warm-brown);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  transition: background 0.25s, color 0.25s, transform 0.2s;
+}
+
+.btn-signin:hover {
+  background: var(--warm-brown);
+  color: var(--cream);
+  transform: translateY(-1px);
+}
+
+.btn-signin:active {
+  transform: translateY(0);
+}
+
+.btn-signin svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* Google Button */
+.btn-google {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1.5px solid var(--border-warm);
+  border-radius: 10px;
+  background: rgba(253, 249, 243, 0.5);
+  backdrop-filter: blur(4px);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--warm-brown);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-google:hover {
+  border-color: var(--gold-soft);
+  background: rgba(253, 249, 243, 0.8);
+}
+
+.btn-google svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Register link */
+.register-link {
+  font-size: 0.84rem;
+  color: var(--warm-brown-light);
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+.register-link a {
+  color: var(--gold);
+  text-decoration: none;
+  font-weight: 700;
+  transition: color 0.2s;
+}
+
+.register-link a:hover {
+  color: var(--warm-brown);
+  text-decoration: underline;
+}
+
+/* ---------- Right Column — Character with Diagonal ---------- */
+.right-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80%;
+  min-height: 380px;
+  position: relative;
+}
+
+.diagonal-clip {
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(18% 0%, 100% 0%, 100% 100%, 0% 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 12px 40px rgba(74, 55, 40, 0.15);
+}
+
+.diagonal-clip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(1.05) contrast(1.02);
+}
+
+.diagonal-clip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(250, 244, 235, 0.25) 0%,
+    transparent 40%,
+    transparent 70%,
+    rgba(201, 169, 110, 0.1) 100%
+  );
+  pointer-events: none;
+}
+
+/* ---------- Bottom Bar ---------- */
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 0;
+  flex-shrink: 0;
+}
+
+.bottom-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--warm-brown-light);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.bottom-link:hover {
+  color: var(--warm-brown);
+}
+
+.bottom-link svg {
+  flex-shrink: 0;
+}
+
+.bottom-bar {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem 0;
+}
+
+#bottomWriteAndRead {
+  margin: 0 auto;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 900px) {
+  .right-col {
+    display: none;
+  }
+
+  .left-col {
+    flex: 1;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .page {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .topnav-links {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .page {
+    padding: 0 1.25rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+
+  .hero-sub {
+    margin-bottom: 1.5rem;
+  }
+}
