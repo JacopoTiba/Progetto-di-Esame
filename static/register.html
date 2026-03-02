@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register</title>
+  <link rel="stylesheet" href="register.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- Fullscreen Background -->
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-overlay" aria-hidden="true"></div>
+
+  <!-- Main Layout -->
+  <main class="page page-register">
+
+    <!-- Top Nav -->
+    <nav class="topnav" aria-label="Main navigation">
+      <span class="topnav-brand">Plotty</span>
+      <div class="topnav-links">
+        <a href="index.html" class="nav-link">Sign In</a>
+        <a href="register.html" class="nav-link active">Register</a>
+      </div>
+      <button class="hamburger" aria-label="Open menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="3" y1="18" x2="21" y2="18" />
+        </svg>
+      </button>
+    </nav>
+
+    <!-- Content Area -->
+    <div class="content">
+    <p class="eyebrow">Welcome here</p>
+    <h1 class="hero-title">Create your<br/>account.</h1>
+    <p class="hero-sub">Fill in the details below to join our community</p>
+
+    <form class="login-form" action="tuo-script-di-registrazione.php" method="post">
+        
+        <div class="input-group">
+            <input type="text" name="nome" placeholder="Nome" required>
+        </div>
+
+        <div class="input-group">
+            <input type="text" name="cognome" placeholder="Cognome" required>
+        </div>
+
+        <div class="input-group">
+            <input type="text" name="username" placeholder="Username" required>
+        </div>
+
+        <div class="input-group">
+            <input type="email" name="email" placeholder="Email" required>
+        </div>
+
+        <div class="input-group">
+            <input type="password" id="pass" name="password" placeholder="Password" required>
+        </div>
+
+        <div class="input-group">
+            <input type="password" id="conf-pass" name="conferma_password" placeholder="Conferma password" required>
+        </div>
+
+        <div class="input-group full">
+            <input type="text" name="indirizzo" placeholder="Indirizzo" required>
+        </div>
+
+        <button type="submit" class="btn-signin full">
+            Register now
+        </button>
+    </form>
+</div>
+
+    <!-- Bottom Nav 
+    <footer class="bottom-bar">
+      <p class="bottom-link">Write and read with us</p>
+    </footer>
+-->
+  </main>
+
+  <script>
+    function togglePassword(inputId, eyeOnId, eyeOffId) {
+      var input = document.getElementById(inputId);
+      var eyeOn = document.getElementById(eyeOnId);
+      var eyeOff = document.getElementById(eyeOffId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        eyeOn.style.display = 'none';
+        eyeOff.style.display = 'block';
+      } else {
+        input.type = 'password';
+        eyeOn.style.display = 'block';
+        eyeOff.style.display = 'none';
+      }
+    }
+  </script>
+
+</body>
+</html>

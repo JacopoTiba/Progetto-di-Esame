@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap');
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --cream: #faf4eb;
+    --cream-light: #fdf9f3;
+    --warm-brown: #4a3728;
+    --warm-brown-light: #7a6555;
+    --gold: #c9a96e;
+    --gold-soft: #dcc9a1;
+    --border-warm: #e0d5c8;
+    --rose-muted: #c49a8a;
+}
+
+html, body {
+    height: 100%;
+    font-family: 'Nunito', sans-serif;
+    color: var(--warm-brown);
+    background-color: var(--cream);
+    overflow-x: hidden;
+}
+
+/* ---------- Background Layers ---------- */
+.bg-layer {
+    position: fixed;
+    inset: 0;
+    background: url('img/ghibli-bg.png') center / cover no-repeat;
+    z-index: 0;
+    filter: blur(6px) saturate(1.1);
+    transform: scale(1.05);
+}
+
+.bg-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(135deg, rgba(250, 244, 235, 0.9) 0%, rgba(250, 244, 235, 0.4) 100%);
+}
+
+/* ---------- Layout ---------- */
+.page {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2.5rem;
+}
+
+.topnav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 0;
+}
+
+.topnav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
+.topnav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: var(--warm-brown-light);
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: 0.3s;
+}
+
+.nav-link.active {
+    color: var(--warm-brown);
+    border-bottom: 2px solid var(--gold);
+}
+
+/* ---------- Registration Form Logic ---------- */
+.content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-bottom: 3rem;
+}
+
+.eyebrow {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+}
+
+.hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.1;
+    margin: 0.5rem 0;
+}
+
+.hero-sub {
+    color: var(--warm-brown-light);
+    margin-bottom: 2rem;
+}
+
+/* Griglia del Form */
+.login-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Due colonne */
+    gap: 1rem;
+    max-width: 600px; /* Un po' più largo per ospitare due colonne */
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border: 1.5px solid var(--border-warm);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    font-family: inherit;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--gold);
+    background: white;
+    box-shadow: 0 0 0 4px rgba(201, 169, 110, 0.1);
+}
+
+/* Campi a larghezza piena */
+.full {
+    grid-column: span 2;
+}
+
+/* Bottone Registrazione */
+.btn-signin {
+    grid-column: span 2;
+    padding: 1rem;
+    background: var(--warm-brown);
+    color: var(--cream);
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: 0.3s transform, 0.3s background;
+    margin-top: 0.5rem;
+}
+
+.btn-signin:hover {
+    background: #36281d;
+    transform: translateY(-2px);
+}
+
+/* Hamburger Hidden on Desktop */
+.hamburger {
+    display: none;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    .login-form {
+        grid-template-columns: 1fr; /* Una colonna su mobile */
+    }
+    
+    .full {
+        grid-column: span 1;
+    }
+
+    .topnav-links {
+        display: none;
+    }
+
+    .hamburger {
+        display: block;
+        background: none;
+        border: none;
+        color: var(--warm-brown);
+    }
+}
