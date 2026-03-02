@@ -12,7 +12,7 @@ CORS(app)
 
 # Connessione (Assicurati che il file .env sia dentro la cartella server)
 client = MongoClient(os.getenv("MONGO_URI"))
-db = client.get_database('plotty')
+db = client.get_database('Plotty')
 
 @app.route('/')
 def index():
@@ -23,8 +23,21 @@ def index():
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
+    temp_mail = data.get('email')
+    temp_password = data.get('password')
+
+    utente = db.credenziali.find_one({"email": temp_mail}) 
+
+    if utente:
+        #controllo esistenza password
+        if utente['password']==temp_password:
+            return jsonify({"login riuscito"}), 200
+        else:
+            return jsonify({"mail o password sbagliate"}),401
+    else:
+        return jsonify({"nome utente non trovato"}), 401
+
     # Qui andrà la logica di controllo password (hash)
-    return jsonify({"message": "Login in fase di sviluppo"}), 200
 
 @app.route('/api/storie', methods=['GET'])
 def get_storie():
@@ -32,4 +45,4 @@ def get_storie():
     return jsonify({"storie": []}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=3000)
