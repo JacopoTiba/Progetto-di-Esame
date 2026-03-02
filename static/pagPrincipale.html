@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StoryWorld - Home</title>
+  <link rel="stylesheet" href="pagPrincipale.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+      <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-overlay" aria-hidden="true"></div>
+  <!-- ====== TOP NAVIGATION ====== -->
+  <nav class="topnav">
+    <a href="#" class="topnav-brand">Plotty</a>
+    <div class="topnav-tabs">
+      <a href="#" class="tab-link active">Home</a>
+      <a href="#" class="tab-link">About You</a>
+      <a href="#" class="tab-link">Inbox</a>
+    </div>
+    <div class="topnav-right">
+      <button class="btn-avatar" aria-label="Profilo utente">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ====== HERO BANNER ====== -->
+  <header class="hero">
+    <img src="img/img1.jpg" alt="Paesaggio Ghibli" class="hero-img" />
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">Your Stories Await</p>
+      <h1 class="hero-title">Plotty</h1>
+      <p class="hero-sub">Discover, write, and share stories in a world of wonder.</p>
+    </div>
+  </header>
+
+  <!-- ====== MAIN CONTENT ====== -->
+  <main class="main-content">
+
+    <!-- Section Header -->
+    <div class="section-header">
+      <h2 class="section-title">Featured Stories</h2>
+      <div class="section-tags">
+        <button class="tag active">All</button>
+        <button class="tag">Adventure</button>
+        <button class="tag">Fantasy</button>
+        <button class="tag">Romance</button>
+        <button class="tag">Mystery</button>
+      </div>
+    </div>
+
+    <!-- ====== STORY GRID ====== -->
+    <div class="story-grid">
+
+      <!-- Story Card 1 -->
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-1.jpg" alt="The Whispering Forest cover" />
+          <div class="card-badge">Adventure</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">The Whispering Forest</h3>
+          <p class="card-author">by Sakura Tanaka</p>
+          <p class="card-desc">A young girl enters an ancient forest where the trees hold memories of a forgotten civilization...</p>
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="10"/></svg>
+              12 chapters
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              348
+            </span>
+          </div>
+          <div class="card-actions">
+            <a href="#" class="btn-read">Read</a>
+            <button class="btn-chat" aria-label="Open chat" disabled>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Story Card 2 -->
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-2.jpg" alt="Castle Beyond the Clouds cover" />
+          <div class="card-badge">Fantasy</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Castle Beyond the Clouds</h3>
+          <p class="card-author">by Haru Miyamoto</p>
+          <p class="card-desc">High above the world floats a castle of ancient technology, waiting for someone brave enough to uncover its secrets...</p>
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="10"/></svg>
+              8 chapters
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              521
+            </span>
+          </div>
+          <div class="card-actions">
+            <a href="#" class="btn-read">Read</a>
+            <button class="btn-chat" aria-label="Open chat" disabled>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Story Card 3 -->
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-3.jpg" alt="Letters from the Bakery cover" />
+          <div class="card-badge">Romance</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Letters from the Bakery</h3>
+          <p class="card-author">by Kiki Aomori</p>
+          <p class="card-desc">In a quiet seaside village, a baker discovers love letters hidden inside the walls of her grandmother's old shop...</p>
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="10"/></svg>
+              15 chapters
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              892
+            </span>
+          </div>
+          <div class="card-actions">
+            <a href="#" class="btn-read">Read</a>
+            <button class="btn-chat" aria-label="Open chat" disabled>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Story Card 4 -->
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-4.jpg" alt="The Sea of Dreams cover" />
+          <div class="card-badge">Adventure</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">The Sea of Dreams</h3>
+          <p class="card-author">by Umi Watanabe</p>
+          <p class="card-desc">A boy sails across a living ocean where the waves carry the dreams of sleeping children to faraway shores...</p>
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="10"/></svg>
+              10 chapters
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              210
+            </span>
+          </div>
+          <div class="card-actions">
+            <a href="#" class="btn-read">Read</a>
+            <button class="btn-chat" aria-label="Open chat" disabled>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Story Card 5 -->
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-5.jpg" alt="The Spirit Garden cover" />
+          <div class="card-badge">Mystery</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">The Spirit Garden</h3>
+          <p class="card-author">by Natsume Ogawa</p>
+          <p class="card-desc">Every full moon, a hidden garden appears where spirits and humans can meet -- but this time, something is terribly wrong...</p>
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="10"/></svg>
+              20 chapters
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              1.2k
+            </span>
+          </div>
+          <div class="card-actions">
+            <a href="#" class="btn-read">Read</a>
+            <button class="btn-chat" aria-label="Open chat" disabled>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <!-- Story Card 6 -->
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-6.jpg" alt="The Midnight Train cover" />
+          <div class="card-badge">Fantasy</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">The Midnight Train</h3>
+          <p class="card-author">by Sen Fujimoto</p>
+          <p class="card-desc">A train that only appears at midnight carries passengers across flooded plains to a destination no one remembers choosing...</p>
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 6v6l4 2"/><circle cx="12" cy="12" r="10"/></svg>
+              6 chapters
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+              445
+            </span>
+          </div>
+          <div class="card-actions">
+            <a href="#" class="btn-read">Read</a>
+            <button class="btn-chat" aria-label="Open chat" disabled>
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Quote Section -->
+    <blockquote class="quote-section">
+      <p>"Once you've met someone, you never really forget them. It just takes a while for your memories to return."</p>
+      <cite>-- Spirited Away</cite>
+    </blockquote>
+
+  </main>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="site-footer">
+    <p class="footer-brand">Plotty</p>
+    <p class="footer-copy">A place where stories come alive.</p>
+  </footer>
+
+  <!-- ====== FAB: Add New Story ====== -->
+  <button class="fab" aria-label="Add new story" disabled>
+    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+</body>
+</html>
