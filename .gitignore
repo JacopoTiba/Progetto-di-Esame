@@ -1,0 +1,28 @@
+# --- DATABASE & SECURITY ---
+# Mai caricare le credenziali su GitHub!
+.env
+server/.env
+
+# --- PYTHON ---
+# Cartelle dell'ambiente virtuale
+venv/
+env/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- NODE / JAVASCRIPT ---
+# Dipendenze pesanti di Node
+node_modules/
+npm-debug.log*
+
+# --- EDITOR & OS ---
+# File di configurazione di VS Code (opzionale, ma consigliato)
+.vscode/
+# File di sistema (Mac/Windows)
+.DS_Store
+Thumbs.db
+
+# --- TYPESCRIPT ---
+# Se inizierai a compilare i file .ts, ignora la cartella di output
+dist/
