@@ -1,4 +1,3 @@
-"use strict";-bh<
 
 document.querySelectorAll(".nav-link").forEach(link => {
   link.addEventListener("click", function(e) {
