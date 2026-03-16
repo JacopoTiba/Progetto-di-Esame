@@ -437,7 +437,33 @@ html, body {
 #bottomWriteAndRead {
   margin: 0 auto;
 }
+body {
+  transition: filter 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+}
 
+.page-exit {
+  filter: blur(10px);
+  opacity: 0;
+  transform: translateY(10px); /* Leggero movimento verso il basso */
+}
+
+/* Animazione all'entrata */
+body {
+  animation: fadeInBlur 0.6s ease-out;
+}
+
+@keyframes fadeInBlur {
+  from {
+    filter: blur(10px);
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    filter: blur(0);
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 /* ============================================
    Responsive
    ============================================ */

@@ -67,9 +67,9 @@ img {
 .bg-layer {
   position: fixed;
   inset: 0;
-  background: url('images/ghibli-bg.png') center / cover no-repeat;
+  background: url('img/home.jpg') center / cover no-repeat;
   z-index: 0;
-  filter: blur(6px) saturate(1.1);
+  filter: saturate(1.1); /* Ho tolto blur(6px) */
   transform: scale(1.05);
 }
 
@@ -77,11 +77,11 @@ img {
   position: fixed;
   inset: 0;
   z-index: 1;
-  background:
-    linear-gradient(135deg,
-      rgba(250, 244, 235, 0.88) 0%,
-      rgba(250, 244, 235, 0.6) 50%,
-      rgba(250, 244, 235, 0.3) 100%);
+  /* Un gradiente più leggero e neutro */
+  background: linear-gradient(135deg, 
+    rgba(255, 255, 255, 0.5) 0%, 
+    rgba(250, 244, 235, 0.3) 100%
+  );
 }
 
 /* ---------- Top Navigation ---------- */
@@ -110,38 +110,56 @@ img {
   letter-spacing: 0.02em;
 }
 
-.topnav-tabs {
-  display: flex;
-  gap: 0;
-  background: rgba(74, 55, 40, 0.06);
-  border-radius: 999px;
-  padding: 4px;
-}
-
-.tab-link {
-  padding: 8px 22px;
-  border-radius: 999px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--warm-brown-light);
-  transition: all 0.25s ease;
-}
-
-.tab-link:hover {
-  color: var(--warm-brown);
-}
-
-.tab-link.active {
-  background: var(--warm-brown);
-  color: var(--cream-light);
-  box-shadow: 0 2px 8px rgba(74, 55, 40, 0.25);
-}
-
+/* Allineamento del gruppo a destra */
 .topnav-right {
   display: flex;
   align-items: center;
+  gap: 1.5rem; /* Spazio tra ricerca e avatar */
 }
 
+.search-form-right {
+  display: flex;
+  align-items: center;
+  background: rgba(74, 55, 40, 0.05);
+  border: 1.5px solid var(--border-warm);
+  border-radius: 999px;
+  padding: 2px 4px 2px 12px;
+  transition: all 0.3s ease;
+  width: 200px; /* Larghezza fissa o variabile */
+}
+
+.search-form-right:focus-within {
+  background: white;
+  border-color: var(--gold-soft);
+  width: 260px; /* Si allunga leggermente quando scrivi */
+  box-shadow: 0 2px 10px rgba(74, 55, 40, 0.08);
+}
+
+.search-form-right .search-input {
+  border: none;
+  background: none;
+  outline: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.85rem;
+  color: var(--warm-brown);
+  width: 100%;
+}
+
+.search-form-right .search-submit {
+  color: var(--warm-brown-light);
+  display: flex;
+  padding: 6px;
+  transition: color 0.2s;
+}
+
+.search-form-right .search-submit:hover {
+  color: var(--warm-brown);
+}
+
+/* Rimuovi i vecchi stili dei tab se non ti servono più */
+.topnav-tabs {
+  display: none;
+}
 .btn-avatar {
   width: 40px;
   height: 40px;

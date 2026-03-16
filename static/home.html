@@ -3,23 +3,33 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StoryWorld - Home</title>
-  <link rel="stylesheet" href="pagPrincipale.css" />
+  <title>Plotty - Home</title>
+  <link rel="stylesheet" href="home.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
-      <div class="bg-layer" aria-hidden="true"></div>
+  <div class="bg-layer" aria-hidden="true"></div>
   <div class="bg-overlay" aria-hidden="true"></div>
+
   <!-- ====== TOP NAVIGATION ====== -->
   <nav class="topnav">
-    <a href="#" class="topnav-brand">Plotty</a>
-    <div class="topnav-tabs">
-      <a href="#" class="tab-link active">Home</a>
-      <a href="#" class="tab-link">About You</a>
-      <a href="#" class="tab-link">Inbox</a>
-    </div>
+  <div class="topnav-brand">Plotty</div>
+
+  <div class="topnav-right">
+    <form class="search-form-right">
+      <input type="text" placeholder="Cerca..." class="search-input">
+      <button type="submit" class="search-submit">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
+    </form>
+    
+    <button class="btn-avatar">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    </button>
+  </div>
+</nav>
     <div class="topnav-right">
       <button class="btn-avatar" aria-label="Profilo utente">
         <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
@@ -32,7 +42,7 @@
 
   <!-- ====== HERO BANNER ====== -->
   <header class="hero">
-    <img src="img/img1.jpg" alt="Paesaggio Ghibli" class="hero-img" />
+    <img src="img/hero-banner.jpg" alt="Paesaggio Ghibli" class="hero-img" />
     <div class="hero-overlay"></div>
     <div class="hero-content">
       <p class="hero-eyebrow">Your Stories Await</p>
@@ -78,6 +88,11 @@
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
               348
             </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+              </svg>
+            </span>
           </div>
           <div class="card-actions">
             <a href="#" class="btn-read">Read</a>
@@ -106,6 +121,11 @@
             <span class="meta-item">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
               521
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+              </svg>
             </span>
           </div>
           <div class="card-actions">
@@ -136,6 +156,11 @@
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
               892
             </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+              </svg>
+            </span>
           </div>
           <div class="card-actions">
             <a href="#" class="btn-read">Read</a>
@@ -164,6 +189,11 @@
             <span class="meta-item">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
               210
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+              </svg>
             </span>
           </div>
           <div class="card-actions">
@@ -194,6 +224,11 @@
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
               1.2k
             </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+              </svg>
+            </span>
           </div>
           <div class="card-actions">
             <a href="#" class="btn-read">Read</a>
@@ -222,6 +257,11 @@
             <span class="meta-item">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
               445
+            </span>
+            <span class="meta-item">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"/>
+              </svg>
             </span>
           </div>
           <div class="card-actions">
