@@ -26,19 +26,20 @@ def login():
     temp_mail = data.get('email')
     temp_password = data.get('password')
 
+    # Cerchiamo l'utente nel database
     utente = db.credenziali.find_one({"email": temp_mail}) 
 
     if utente:
-        #controllo esistenza password
-        if utente['password']==temp_password:
-            return jsonify({"login riuscito"}), 200
+        # Controllo se la password corrisponde
+        if utente['password'] == temp_password:
+            return jsonify({"message": "login riuscito"}), 200
         else:
-            return jsonify({"mail o password sbagliate"}),401
+            return jsonify({"message": "mail o password sbagliate"}), 401
     else:
-        return jsonify({"nome utente non trovato"}), 401
-
-    # Qui andrà la logica di controllo password (hash)
-
+        # Se l'utente non esiste proprio
+        return jsonify({"message": "nome utente non trovato"}), 401
+    
+    
 @app.route('/api/storie', methods=['GET'])
 def get_storie():
     # Qui recupererai le storie dal DB
