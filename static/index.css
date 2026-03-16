@@ -83,7 +83,7 @@ html, body {
 
 .topnav-brand {
   font-family: 'Playfair Display', serif;
-  font-size: 1rem;
+  font-size: 2rem;
   font-weight: 600;
   color: var(--warm-brown);
   letter-spacing: 0.02em;
@@ -148,7 +148,7 @@ html, body {
 
 .hero-title {
   font-family: 'Playfair Display', serif;
-  font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+  font-size: clamp(2.0rem, 4.5vw, 3.0rem);
   font-weight: 700;
   color: var(--warm-brown);
   line-height: 1.1;
@@ -304,6 +304,35 @@ html, body {
 }
 
 .btn-google svg {
+  width: 16px;
+  height: 16px;
+}
+/* Facebook Button */
+.btn-facebook {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1.5px solid var(--border-warm);
+  border-radius: 10px;
+  background: rgba(253, 249, 243, 0.5);
+  backdrop-filter: blur(4px);
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--warm-brown);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.btn-facebook:hover {
+  border-color: var(--gold-soft);
+  background: rgba(253, 249, 243, 0.8);
+}
+
+.btn-facebook svg {
   width: 16px;
   height: 16px;
 }
