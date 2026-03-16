@@ -70,6 +70,8 @@ img {
   background: url('img/home.jpg') center / cover no-repeat;
   z-index: 0;
   filter: saturate(1.1); /* Ho tolto blur(6px) */
+  z-index: 0;
+  filter: blur(6px) saturate(1.1);
   transform: scale(1.05);
 }
 
@@ -160,6 +162,7 @@ img {
 .topnav-tabs {
   display: none;
 }
+
 .btn-avatar {
   width: 40px;
   height: 40px;
