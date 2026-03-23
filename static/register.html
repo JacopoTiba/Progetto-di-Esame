@@ -11,14 +11,11 @@
 </head>
 <body>
 
-  <!-- Fullscreen Background -->
   <div class="bg-layer" aria-hidden="true"></div>
   <div class="bg-overlay" aria-hidden="true"></div>
 
-  <!-- Main Layout -->
   <main class="page page-register">
 
-    <!-- Top Nav -->
     <nav class="topnav" aria-label="Main navigation">
       <span class="topnav-brand">Plotty</span>
       <div class="topnav-links">
@@ -34,31 +31,29 @@
       </button>
     </nav>
 
-    <!-- Content Area: Two Columns -->
     <div class="content">
       
-      <!-- Left Column: Form -->
       <div class="left-col">
         <p class="eyebrow">Welcome here</p>
         <h1 class="hero-title">Create your<br/>account.</h1>
         <p class="hero-sub">Fill in the details below to join our community</p>
 
-        <form class="login-form" action="#" method="post">
+        <form id="register-form" class="login-form" action="#" method="post">
             
             <div class="input-group">
-                <input type="text" name="nome" placeholder="Nome" required />
+                <input type="text" id="reg-nome" name="nome" placeholder="Nome" required />
             </div>
 
             <div class="input-group">
-                <input type="text" name="cognome" placeholder="Cognome" required />
+                <input type="text" id="reg-cognome" name="cognome" placeholder="Cognome" required />
             </div>
 
             <div class="input-group full">
-                <input type="text" name="username" placeholder="Username" required />
+                <input type="text" id="reg-username" name="username" placeholder="Username" required />
             </div>
 
             <div class="input-group full">
-                <input type="email" name="email" placeholder="Email" required />
+                <input type="email" id="reg-email" name="email" placeholder="Email" required />
             </div>
 
             <div class="input-group">
@@ -94,7 +89,7 @@
             </div>
 
             <div class="input-group full">
-                <input type="text" name="indirizzo" placeholder="Indirizzo" required />
+                <input type="text" id="reg-indirizzo" name="indirizzo" placeholder="Indirizzo" required />
             </div>
 
             <button type="submit" class="btn-signin full">
@@ -102,13 +97,13 @@
             </button>
         </form>
 
+        <div id="messaggio-box" style="display:none; margin-top: 15px; padding: 10px; border-radius: 4px; text-align: center;"></div>
 
         <p class="bottom-link">
           Already have an account? <a href="index.html">Sign In</a>
         </p>
       </div>
 
-      <!-- Right Column: Image -->
       <div class="right-col">
         <div class="image-frame">
           <img src="img/img2.jpg" alt="Ghibli illustration" />
@@ -135,5 +130,18 @@
     }
   </script>
 
+  <script type="module" src="script.js"></script>
+<div id="otp-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:white; padding:30px; border-radius:15px; text-align:center; max-width:400px; width:90%;">
+        <h2 style="font-family:'Playfair Display'; color:#333;">Verifica Email</h2>
+        <p style="font-family:'Nunito'; color:#666;">Inserisci il codice di 6 cifre inviato alla tua mail</p>
+        
+        <input type="text" id="otp-input" maxlength="6" placeholder="123456" 
+               style="width:80%; padding:15px; margin:20px 0; font-size:24px; letter-spacing:10px; text-align:center; border:2px solid #ddd; border-radius:8px;">
+        
+        <button id="btn-conferma-otp" class="btn-signin" style="width:100%;">Verifica e Attiva</button>
+        <p id="otp-error" style="color:red; display:none; margin-top:10px;"></p>
+    </div>
+</div>
 </body>
 </html>

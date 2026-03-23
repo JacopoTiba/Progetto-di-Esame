@@ -18,7 +18,7 @@ def invia_mail_codice(destinatario, codice):
         # Usiamo la porta 465 per una connessione sicura SSL
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
             # QUI DEVI USARE LA PASSWORD PER LE APP DI GOOGLE
-            smtp.login("tua_mail@gmail.com", "xxxx xxxx xxxx xxxx") 
+            smtp.login("tibaldijacopo@gmail.com", "sojk hhjy wvpf qnco") 
             smtp.send_message(msg)
         return True
     except Exception as e:
