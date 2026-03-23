@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profilo – Plotty</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --sky:      #d6eaf0;
+      --sky-deep: #a8cfe0;
+      --leaf:     #7aab8c;
+      --leaf-dark:#4d7a60;
+      --moss:     #b5c99a;
+      --cream:    #f5f0e8;
+      --parchment:#ede5d0;
+      --dust:     #c8b89a;
+      --ink:      #3a3228;
+      --ink-soft: #6b5e4e;
+      --red-acc:  #c97060;
+      --gold:     #c9a040;
+      --border:   #d5cabb;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Zen Kaku Gothic New', sans-serif;
+      color: var(--ink);
+      background: var(--sky);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated sky background ── */
+    .sky-bg {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 120% 60% at 30% 10%, #e8f4f8 0%, transparent 60%),
+        radial-gradient(ellipse 80% 50% at 80% 5%, #d0e8f0 0%, transparent 55%),
+        linear-gradient(180deg, #c8dfe8 0%, #d6eaf0 30%, #e4eed8 60%, #eee8d5 100%);
+    }
+
+    /* ── Floating clouds ── */
+    .cloud { position: fixed; z-index: 1; opacity: 0.55; pointer-events: none; }
+    .cloud svg { fill: #fff; filter: blur(1px); }
+    .cloud-1 { top: 6%; left: -5%; animation: drift 60s linear infinite; }
+    .cloud-2 { top: 14%; left: 20%; animation: drift 90s linear infinite 20s; }
+    .cloud-3 { top: 4%;  left: 60%; animation: drift 75s linear infinite 10s; }
+    @keyframes drift { from { transform: translateX(0); } to { transform: translateX(110vw); } }
+
+    /* ── Fireflies ── */
+    .firefly {
+      position: fixed; z-index: 2; width: 5px; height: 5px;
+      border-radius: 50%; pointer-events: none;
+      background: radial-gradient(circle, #ffe97a 0%, transparent 70%);
+      animation: float-fly var(--dur) ease-in-out infinite var(--delay);
+    }
+    @keyframes float-fly {
+      0%, 100% { transform: translate(0,0) scale(1); opacity: 0; }
+      20% { opacity: 0.9; }
+      50% { transform: translate(var(--tx), var(--ty)) scale(1.3); opacity: 0.7; }
+      80% { opacity: 0.4; }
+    }
+
+    /* ── Grass silhouette at bottom ── */
+    .grass-layer {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 2; pointer-events: none;
+      height: 80px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 80'%3E%3Cpath fill='%234d7a60' fill-opacity='0.6' d='M0,60 C60,40 80,20 120,35 C150,48 160,10 200,25 C240,40 250,0 290,20 C330,40 340,15 380,30 C420,45 440,5 480,22 C520,39 540,8 580,18 C620,28 640,0 680,15 C720,30 740,5 780,20 C820,35 840,10 880,25 C920,40 950,0 990,18 C1030,36 1060,5 1100,22 C1140,39 1160,8 1200,25 C1240,42 1280,10 1320,30 C1360,50 1400,20 1440,35 L1440,80 L0,80 Z'/%3E%3C/svg%3E") bottom/cover no-repeat;
+    }
+
+    /* ── Top Navigation ── */
+    .topnav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2.5rem;
+      background: rgba(245, 240, 232, 0.82);
+      backdrop-filter: blur(10px);
+      border-bottom: 1.5px solid var(--border);
+    }
+
+    .topnav-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem; font-weight: 600; letter-spacing: 0.04em;
+      color: var(--leaf-dark);
+    }
+    .topnav-brand span { color: var(--red-acc); }
+
+    .topnav-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    .search-form-right { display: flex; align-items: center; gap: 0.5rem; }
+    .search-input {
+      padding: 0.4rem 0.9rem; border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: rgba(255,255,255,0.6); font-family: inherit;
+      font-size: 0.82rem; color: var(--ink);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .search-input:focus { border-color: var(--leaf); box-shadow: 0 0 0 3px rgba(122,171,140,0.2); }
+    .search-input::placeholder { color: var(--dust); }
+    .search-submit {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--leaf); color: #fff; border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .search-submit:hover { background: var(--leaf-dark); transform: scale(1.08); }
+
+    .btn-avatar {
+      width: 36px; height: 36px; border-radius: 50%; border: none; cursor: pointer;
+      background: var(--parchment); color: var(--leaf-dark);
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--border);
+      transition: background 0.2s;
+    }
+    .btn-avatar:hover { background: var(--moss); }
+
+    /* ── Main Content ── */
+    .main-content {
+      position: relative; z-index: 10;
+      max-width: 1100px; margin: 0 auto;
+      padding: 96px 2.5rem 120px;
+    }
+
+    /* ── Profile Header ── */
+    .profile-card {
+      position: relative;
+      background: rgba(245, 240, 232, 0.82);
+      backdrop-filter: blur(12px);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem 2.5rem 2rem;
+      margin-bottom: 3rem;
+      overflow: hidden;
+    }
+
+    /* decorative leaf corners */
+    .profile-card::before {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 180px; height: 180px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cellipse cx='140' cy='40' rx='70' ry='30' fill='%237aab8c' fill-opacity='0.18' transform='rotate(30 140 40)'/%3E%3Cellipse cx='160' cy='80' rx='55' ry='22' fill='%234d7a60' fill-opacity='0.12' transform='rotate(50 160 80)'/%3E%3Cellipse cx='120' cy='20' rx='45' ry='18' fill='%23b5c99a' fill-opacity='0.2' transform='rotate(15 120 20)'/%3E%3C/svg%3E") no-repeat;
+      pointer-events: none;
+    }
+
+    .profile-inner { display: flex; align-items: center; gap: 2rem; flex-wrap: wrap; }
+
+    .profile-avatar-wrap { position: relative; flex-shrink: 0; }
+    .profile-avatar-ring {
+      width: 110px; height: 110px; border-radius: 50%;
+      padding: 4px;
+      background: linear-gradient(135deg, var(--moss), var(--gold), var(--leaf));
+    }
+    .profile-avatar-ring img {
+      width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; display: block;
+      border: 3px solid var(--cream);
+    }
+    .avatar-badge {
+      position: absolute; bottom: 4px; right: 4px;
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--leaf); border: 2px solid var(--cream);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .avatar-badge svg { width: 11px; height: 11px; fill: #fff; }
+
+    .profile-details { flex: 1; min-width: 200px; }
+    .profile-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem; font-weight: 600; line-height: 1.15;
+      color: var(--ink);
+    }
+    .profile-handle {
+      font-size: 0.82rem; color: var(--leaf-dark);
+      font-weight: 500; letter-spacing: 0.04em; margin-bottom: 0.4rem;
+    }
+    .profile-bio {
+      font-size: 0.9rem; color: var(--ink-soft);
+      max-width: 360px; line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+
+    .profile-stats {
+      display: flex; gap: 2rem; flex-wrap: wrap;
+    }
+    .stat-item { display: flex; flex-direction: column; align-items: center; }
+    .stat-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; font-weight: 600; color: var(--leaf-dark);
+    }
+    .stat-label { font-size: 0.72rem; color: var(--dust); text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .profile-actions { display: flex; gap: 0.75rem; margin-top: 1.2rem; flex-wrap: wrap; }
+    .btn-follow {
+      padding: 0.5rem 1.5rem; border-radius: 999px;
+      background: var(--leaf); color: #fff;
+      font-family: inherit; font-size: 0.82rem; font-weight: 700;
+      border: none; cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.04em;
+    }
+    .btn-follow:hover { background: var(--leaf-dark); transform: translateY(-1px); }
+    .btn-msg {
+      padding: 0.5rem 1.5rem; border-radius: 999px;
+      background: transparent; color: var(--leaf-dark);
+      font-family: inherit; font-size: 0.82rem; font-weight: 700;
+      border: 1.5px solid var(--leaf); cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      letter-spacing: 0.04em;
+    }
+    .btn-msg:hover { background: rgba(122,171,140,0.12); transform: translateY(-1px); }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .divider-line { flex: 1; height: 1px; background: var(--border); }
+    .divider-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; font-weight: 600; font-style: italic;
+      color: var(--leaf-dark);
+      white-space: nowrap;
+    }
+    .divider-deco { font-size: 1rem; color: var(--moss); }
+
+    /* ── Story Grid ── */
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+
+    /* ── Story Card ── */
+    .story-card {
+      background: rgba(245, 240, 232, 0.78);
+      backdrop-filter: blur(8px);
+      border: 1.5px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(.22,1,.36,1), box-shadow 0.35s;
+      animation: card-in 0.6s cubic-bezier(.22,1,.36,1) both;
+    }
+    .story-card:nth-child(1) { animation-delay: 0.05s; }
+    .story-card:nth-child(2) { animation-delay: 0.12s; }
+    .story-card:nth-child(3) { animation-delay: 0.19s; }
+    .story-card:nth-child(4) { animation-delay: 0.26s; }
+    .story-card:nth-child(5) { animation-delay: 0.33s; }
+    .story-card:nth-child(6) { animation-delay: 0.40s; }
+    @keyframes card-in {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .story-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 16px 40px rgba(77,122,96,0.15), 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .card-image {
+      position: relative;
+      width: 100%; aspect-ratio: 4/3; overflow: hidden;
+    }
+    .card-image img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.5s cubic-bezier(.22,1,.36,1);
+    }
+    .story-card:hover .card-image img { transform: scale(1.06); }
+
+    /* painterly vignette */
+    .card-image::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(58,50,40,0.45) 100%);
+    }
+
+    .card-badge {
+      position: absolute; top: 10px; left: 10px; z-index: 2;
+      padding: 3px 10px; border-radius: 999px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em;
+      background: rgba(245,240,232,0.88);
+      color: var(--leaf-dark);
+      border: 1px solid var(--border);
+    }
+
+    .card-body { padding: 1.1rem 1.25rem 1.25rem; }
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; font-weight: 600;
+      color: var(--ink); line-height: 1.3;
+      margin-bottom: 0.25rem;
+    }
+    .card-author {
+      font-size: 0.73rem; color: var(--leaf-dark);
+      font-weight: 600; letter-spacing: 0.03em; margin-bottom: 0.45rem;
+    }
+    .card-desc {
+      font-size: 0.8rem; color: var(--ink-soft);
+      line-height: 1.6; margin-bottom: 0.8rem;
+    }
+    .card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .btn-read {
+      display: inline-block;
+      padding: 0.35rem 1rem; border-radius: 999px;
+      background: var(--parchment); color: var(--leaf-dark);
+      font-size: 0.72rem; font-weight: 700;
+      border: 1.5px solid var(--border);
+      transition: background 0.2s, border-color 0.2s;
+      text-decoration: none;
+    }
+    .btn-read:hover { background: var(--moss); border-color: var(--leaf); color: var(--ink); }
+    .card-meta { display: flex; gap: 0.6rem; align-items: center; }
+    .meta-icon { display: flex; align-items: center; gap: 3px; font-size: 0.7rem; color: var(--dust); }
+    .meta-icon svg { width: 12px; height: 12px; stroke: currentColor; fill: none; }
+
+    /* ── Footer ── */
+    .site-footer {
+      position: relative; z-index: 10;
+      text-align: center; padding: 2.5rem 1rem 3rem;
+      background: rgba(77,122,96,0.92);
+      color: rgba(245,240,232,0.75);
+    }
+    .footer-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem; font-weight: 600;
+      color: var(--cream); letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+    }
+    .footer-copy { font-size: 0.78rem; font-style: italic; }
+
+    /* ── FAB ── */
+    .fab {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 200;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: var(--leaf-dark); color: #fff; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 6px 24px rgba(77,122,96,0.35);
+      transition: transform 0.3s cubic-bezier(.22,1,.36,1), background 0.2s;
+    }
+    .fab::before {
+      content: '';
+      position: absolute; inset: -3px; border-radius: 50%;
+      border: 2px solid rgba(181,201,154,0.4);
+      animation: fab-pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes fab-pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50%       { opacity: 0.2; transform: scale(1.18); }
+    }
+    .fab:hover { transform: scale(1.1) rotate(90deg); background: var(--leaf); }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .story-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .topnav { padding: 0 1.25rem; }
+      .main-content { padding: 80px 1.25rem 100px; }
+      .profile-card { padding: 1.5rem; }
+      .profile-name { font-size: 1.7rem; }
+      .story-grid { grid-template-columns: 1fr; }
+      .profile-inner { gap: 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sky bg -->
+  <div class="sky-bg" aria-hidden="true"></div>
+
+  <!-- Clouds -->
+  <div class="cloud cloud-1" aria-hidden="true">
+    <svg viewBox="0 0 200 70" width="200"><ellipse cx="100" cy="45" rx="90" ry="25"/><ellipse cx="70" cy="38" rx="50" ry="22"/><ellipse cx="130" cy="35" rx="45" ry="20"/></svg>
+  </div>
+  <div class="cloud cloud-2" aria-hidden="true">
+    <svg viewBox="0 0 140 55" width="140"><ellipse cx="70" cy="36" rx="62" ry="19"/><ellipse cx="50" cy="28" rx="36" ry="18"/><ellipse cx="95" cy="26" rx="32" ry="16"/></svg>
+  </div>
+  <div class="cloud cloud-3" aria-hidden="true">
+    <svg viewBox="0 0 170 60" width="170"><ellipse cx="85" cy="40" rx="78" ry="20"/><ellipse cx="60" cy="32" rx="42" ry="19"/><ellipse cx="115" cy="30" rx="38" ry="17"/></svg>
+  </div>
+
+  <!-- Fireflies -->
+  <div class="firefly" style="--dur:6s;--delay:0s;--tx:40px;--ty:-60px;top:40%;left:10%;"></div>
+  <div class="firefly" style="--dur:8s;--delay:1s;--tx:-30px;--ty:-80px;top:55%;left:25%;"></div>
+  <div class="firefly" style="--dur:7s;--delay:2s;--tx:50px;--ty:-50px;top:65%;left:70%;"></div>
+  <div class="firefly" style="--dur:9s;--delay:0.5s;--tx:-50px;--ty:-40px;top:30%;left:80%;"></div>
+  <div class="firefly" style="--dur:6.5s;--delay:3s;--tx:30px;--ty:-70px;top:70%;left:45%;"></div>
+  <div class="firefly" style="--dur:10s;--delay:1.5s;--tx:-40px;--ty:-55px;top:50%;left:60%;"></div>
+
+  <!-- Grass -->
+  <div class="grass-layer" aria-hidden="true"></div>
+
+  <!-- ── Top Navigation ── -->
+  <nav class="topnav">
+    <div class="topnav-brand">Pl<span>o</span>tty</div>
+    <div class="topnav-right">
+      <form class="search-form-right">
+        <input type="text" placeholder="Cerca storie..." class="search-input" />
+        <button type="submit" class="search-submit" aria-label="Cerca">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+        </button>
+      </form>
+      <button class="btn-avatar" aria-label="Profilo utente">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ── Main ── -->
+  <main class="main-content">
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="profile-inner">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar-ring">
+            <img src="img/avatar-placeholder.jpg" alt="Avatar Utente" onerror="this.src='https://placehold.co/110x110/b5c99a/4d7a60?text=✦'"/>
+          </div>
+          <div class="avatar-badge">
+            <svg viewBox="0 0 12 12"><path d="M6 1l1.3 2.6 2.9.4-2.1 2 .5 2.9L6 7.6 3.4 9l.5-2.9L2 4l2.9-.4z"/></svg>
+          </div>
+        </div>
+
+        <div class="profile-details">
+          <p class="profile-handle">@nome.utente</p>
+          <h1 class="profile-name">Nome Utente</h1>
+          <p class="profile-bio">Una voce silenziosa tra le foglie — scrivo di mondi che vorrei abitare e di magie che il vento porta via.</p>
+
+          <div class="profile-stats">
+            <div class="stat-item">
+              <span class="stat-num">10</span>
+              <span class="stat-label">Storie</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">200</span>
+              <span class="stat-label">Follower</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-num">150</span>
+              <span class="stat-label">Seguiti</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section title -->
+    <div class="divider">
+      <div class="divider-line"></div>
+      <span class="divider-deco">🌿</span>
+      <span class="divider-title">Storie Personali</span>
+      <span class="divider-deco">🌿</span>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Story Grid -->
+    <div class="story-grid">
+
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-1.jpg" alt="Storia 1" onerror="this.src='https://placehold.co/400x300/a8cfe0/3a3228?text=~'"/>
+          <div class="card-badge">Avventura</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Il Bosco dei Mille Spiriti</h3>
+          <p class="card-author">di Nome Autore</p>
+          <p class="card-desc">Tra le radici antiche e le luci danzanti, Hana scopre un sentiero che nessun adulto riesce a vedere...</p>
+          <div class="card-footer">
+            <a href="#" class="btn-read">Leggi</a>
+            <div class="card-meta">
+              <span class="meta-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>142</span>
+              <span class="meta-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>38</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-2.jpg" alt="Storia 2" onerror="this.src='https://placehold.co/400x300/b5c99a/3a3228?text=~'"/>
+          <div class="card-badge">Magia</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">La Bambina che Parlava con il Vento</h3>
+          <p class="card-author">di Nome Autore</p>
+          <p class="card-desc">Ogni mattina, prima che il sole sorgesse, Sora saliva sulla collina per ascoltare i segreti del vento...</p>
+          <div class="card-footer">
+            <a href="#" class="btn-read">Leggi</a>
+            <div class="card-meta">
+              <span class="meta-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>97</span>
+              <span class="meta-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>22</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="story-card">
+        <div class="card-image">
+          <img src="img/story-3.jpg" alt="Storia 3" onerror="this.src='https://placehold.co/400x300/dcc9a1/3a3228?text=~'"/>
+          <div class="card-badge">Viaggio</div>
+        </div>
+        <div class="card-body">
+          <h3 class="card-title">Il Castello oltre le Nuvole</h3>
+          <p class="card-author">di Nome Autore</p>
+          <p class="card-desc">Riku non credeva nei luoghi impossibili finché una mattina si ritrovò a fluttuare tra le torri di un regno dimenticato...</p>
+          <div class="card-footer">
+            <a href="#" class="btn-read">Leggi</a>
+            <div class="card-meta">
+              <span class="meta-icon"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>210</span>
+              <span class="meta-icon"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>61</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer">
+    <p class="footer-brand">Plotty</p>
+    <p class="footer-copy">A place where stories come alive.</p>
+  </footer>
+
+  <!-- ── FAB ── -->
+  <button class="fab" aria-label="Aggiungi nuova storia">
+    <svg width="26" height="26" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+</body>
+</html>
