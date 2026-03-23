@@ -1,49 +1,50 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
-import os
-from dotenv import load_dotenv
-from pymongo import MongoClient
+from .database import credenziali, storie
+from .auth import genera_codice, invia_mail_codice
 
-load_dotenv()
-
-# Il segreto è '../static': esce da server e va in static
 app = Flask(__name__, static_folder='../static', static_url_path='')
 CORS(app)
-
-# Connessione (Assicurati che il file .env sia dentro la cartella server)
-client = MongoClient(os.getenv("MONGO_URI"))
-db = client.get_database('Plotty')
 
 @app.route('/')
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
-# ... resto del codice
+# --- ROTTE UTENTI ---
 
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
-    temp_mail = data.get('email')
-    temp_password = data.get('password')
+    # Cerchiamo tra gli utenti che hai già nel DB
+    utente = credenziali.find_one({"email": data.get('email')})
+    
+    if utente and utente['password'] == data.get('password'):
+        return jsonify({"message": "login riuscito"}), 200
+    return jsonify({"message": "mail o password sbagliate"}), 401
 
-    # Cerchiamo l'utente nel database
-    utente = db.credenziali.find_one({"email": temp_mail}) 
-
+@app.route('/api/richiedi-codice', methods=['POST'])
+def richiedi_codice():
+    email = request.json.get('email')
+    utente = credenziali.find_one({"email": email})
+    
     if utente:
-        # Controllo se la password corrisponde
-        if utente['password'] == temp_password:
-            return jsonify({"message": "login riuscito"}), 200
-        else:
-            return jsonify({"message": "mail o password sbagliate"}), 401
-    else:
-        # Se l'utente non esiste proprio
-        return jsonify({"message": "nome utente non trovato"}), 401
+        codice = genera_codice()
+        # Aggiorniamo l'utente esistente con il nuovo codice
+        credenziali.update_one({"email": email}, {"$set": {"codice_verifica": codice}})
+        
+        if invia_mail_codice(email, codice):
+            return jsonify({"message": "Codice inviato via mail!"}), 200
+        return jsonify({"message": "Errore tecnico nell'invio"}), 500
     
-    
+    return jsonify({"message": "Utente non trovato nel sistema"}), 404
+
+# --- ROTTE CONTENUTI ---
+
 @app.route('/api/storie', methods=['GET'])
 def get_storie():
-    # Qui recupererai le storie dal DB
-    return jsonify({"storie": []}), 200
+    # Recupera le storie dal DB (escludendo l'ID di Mongo per pulizia JSON)
+    lista = list(storie.find({}, {"_id": 0}))
+    return jsonify({"storie": lista}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, port=3000)
