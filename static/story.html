@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plotty – The Whispering Forest</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400;1,500&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+<style>
+/* =============================================
+   RESET & ROOT
+   ============================================= */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+    --cream:            #faf4eb;
+    --cream-light:      #fdf9f3;
+    --cream-dark:       #f3ead8;
+    --warm-brown:       #4a3728;
+    --warm-brown-light: #7a6555;
+    --warm-brown-faint: #a08070;
+    --gold:             #c9a96e;
+    --gold-soft:        #dcc9a1;
+    --rose-muted:       #c49a8a;
+    --border-warm:      #e0d5c8;
+    --text-body:        #3a2d22;
+    --text-drop:        #2e2218;
+
+    --reading-width:    680px;
+    --nav-h:            60px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Lora', serif;
+    background: var(--cream);
+    color: var(--text-body);
+    line-height: 1.75;
+    min-height: 100vh;
+}
+
+a { text-decoration: none; color: inherit; }
+button { border: none; background: none; cursor: pointer; font-family: inherit; }
+img { display: block; max-width: 100%; }
+
+/* =============================================
+   TOP NAV
+   ============================================= */
+.topnav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    background: rgba(253, 249, 243, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1.5px solid var(--border-warm);
+}
+
+.topnav-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.btn-back {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--warm-brown-light);
+    padding: 6px 12px 6px 8px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-warm);
+    background: transparent;
+    transition: all 0.2s;
+}
+.btn-back:hover {
+    color: var(--warm-brown);
+    background: rgba(74,55,40,0.06);
+    border-color: var(--gold-soft);
+}
+.btn-back svg { flex-shrink: 0; }
+
+.nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--warm-brown);
+    letter-spacing: 0.02em;
+    opacity: 0.5;
+}
+
+.topnav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Progress bar sotto la nav */
+.reading-progress {
+    position: fixed;
+    top: var(--nav-h);
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--rose-muted));
+    z-index: 101;
+    transition: width 0.1s linear;
+    border-radius: 0 2px 2px 0;
+}
+
+/* Nav icon buttons */
+.nav-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--warm-brown-light);
+    background: transparent;
+    border: 1.5px solid transparent;
+    transition: all 0.2s;
+    position: relative;
+}
+.nav-btn:hover, .nav-btn.active {
+    background: rgba(74,55,40,0.08);
+    border-color: var(--border-warm);
+    color: var(--warm-brown);
+}
+.nav-btn.active { color: var(--gold); }
+
+/* Tooltip */
+.nav-btn[data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    background: var(--warm-brown);
+    color: var(--cream-light);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+}
+.nav-btn[data-tip]:hover::after { opacity: 1; }
+
+/* =============================================
+   HERO COVER
+   ============================================= */
+.story-hero {
+    position: relative;
+    width: 100%;
+    height: 52vh;
+    min-height: 300px;
+    max-height: 480px;
+    margin-top: var(--nav-h);
+    overflow: hidden;
+}
+
+.story-hero-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 30%;
+    filter: saturate(1.05) contrast(1.02);
+    transition: transform 12s ease;
+}
+.story-hero:hover .story-hero-img { transform: scale(1.04); }
+
+.story-hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(74,55,40,0.08) 0%,
+        rgba(74,55,40,0.3)  50%,
+        rgba(250,244,235,1) 100%
+    );
+}
+
+/* Info flottante sulla hero */
+.story-hero-meta {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 2rem 2rem;
+    max-width: calc(var(--reading-width) + 4rem);
+    margin: 0 auto;
+}
+
+.story-genre-badge {
+    display: inline-block;
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: rgba(253,249,243,0.85);
+    backdrop-filter: blur(6px);
+    color: var(--warm-brown);
+    border: 1px solid rgba(224,213,200,0.5);
+    margin-bottom: 0.75rem;
+}
+
+.story-main-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    color: var(--cream-light);
+    line-height: 1.1;
+    text-shadow: 0 2px 24px rgba(40,20,5,0.55);
+    margin-bottom: 0.4rem;
+}
+
+.story-author-line {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: rgba(253,249,243,0.75);
+}
+.story-author-line a { transition: color 0.2s; }
+.story-author-line a:hover { color: var(--gold-soft); }
+
+/* =============================================
+   STORY META BAR (sotto hero)
+   ============================================= */
+.story-meta-bar {
+    max-width: calc(var(--reading-width) + 4rem);
+    margin: 0 auto;
+    padding: 1.25rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    border-bottom: 1.5px solid var(--border-warm);
+}
+
+.meta-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--warm-brown-light);
+}
+.meta-chip svg { color: var(--gold); flex-shrink: 0; }
+
+.meta-divider {
+    width: 1px;
+    height: 14px;
+    background: var(--border-warm);
+}
+
+.rating-stars {
+    display: flex;
+    gap: 2px;
+    align-items: center;
+}
+.rating-stars svg { width: 13px; height: 13px; fill: var(--gold); }
+.rating-stars svg.empty { fill: var(--border-warm); }
+.rating-value {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--warm-brown);
+    margin-left: 4px;
+}
+
+/* =============================================
+   READING AREA
+   ============================================= */
+.reading-wrap {
+    max-width: calc(var(--reading-width) + 4rem);
+    margin: 0 auto;
+    padding: 0 2rem 6rem;
+}
+
+/* Summary / abstract */
+.story-summary {
+    margin: 2.5rem 0;
+    padding: 1.5rem 1.75rem;
+    background: rgba(201,169,110,0.08);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+}
+.story-summary p {
+    font-family: 'Lora', serif;
+    font-size: 1rem;
+    font-style: italic;
+    color: var(--warm-brown-light);
+    line-height: 1.7;
+}
+
+/* Divisore decorativo prima del testo */
+.story-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 2rem 0 2.5rem;
+    color: var(--gold-soft);
+}
+.story-divider::before,
+.story-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-warm);
+}
+.story-divider-icon {
+    font-size: 1rem;
+    line-height: 1;
+    color: var(--gold);
+}
+
+/* Il corpo della storia — i paragrafi vengono iniettati da JS */
+.story-body {
+    font-family: 'Lora', serif;
+    font-size: 1.08rem;
+    line-height: 1.85;
+    color: var(--text-body);
+    letter-spacing: 0.01em;
+}
+
+/* Ogni paragrafo */
+.story-body p {
+    margin-bottom: 1.6em;
+    text-indent: 1.5em;
+}
+.story-body p:first-child { text-indent: 0; }
+
+/* Drop cap sul primissimo carattere */
+.story-body p:first-child::first-letter {
+    font-family: 'Playfair Display', serif;
+    font-size: 4.2em;
+    font-weight: 800;
+    float: left;
+    line-height: 0.78;
+    margin: 0.06em 0.1em 0 0;
+    color: var(--text-drop);
+    padding: 0;
+}
+
+/* Separatori di scena — riga vuota con *** */
+.story-body .scene-break {
+    text-align: center;
+    color: var(--gold-soft);
+    letter-spacing: 0.4em;
+    margin: 2.5em 0;
+    font-size: 0.9rem;
+    text-indent: 0 !important;
+}
+
+/* Fine storia */
+.story-end {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+    border-top: 1.5px solid var(--border-warm);
+    text-align: center;
+}
+.story-end-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--gold-soft);
+}
+.story-end-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--warm-brown);
+    font-style: italic;
+}
+
+/* =============================================
+   REACTIONS BAR (fissa in basso su mobile,
+   inline su desktop)
+   ============================================= */
+.reactions-bar {
+    max-width: calc(var(--reading-width) + 4rem);
+    margin: 2rem auto 0;
+    padding: 1rem 2rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.reactions-left {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.reaction-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-warm);
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--warm-brown-light);
+    transition: all 0.2s;
+}
+.reaction-btn:hover, .reaction-btn.active {
+    border-color: var(--gold-soft);
+    color: var(--warm-brown);
+    background: rgba(201,169,110,0.1);
+}
+.reaction-btn.active .reaction-count { color: var(--gold); }
+
+.reactions-right {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.share-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-warm);
+    background: transparent;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--warm-brown-light);
+    transition: all 0.2s;
+}
+.share-btn:hover {
+    border-color: var(--warm-brown);
+    color: var(--warm-brown);
+    background: rgba(74,55,40,0.06);
+}
+
+/* =============================================
+   FONT SIZE PANEL
+   ============================================= */
+.font-panel {
+    position: fixed;
+    top: calc(var(--nav-h) + 12px);
+    right: 1rem;
+    z-index: 99;
+    background: var(--cream-light);
+    border: 1.5px solid var(--border-warm);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 8px 30px rgba(74,55,40,0.12);
+    display: none;
+    flex-direction: column;
+    gap: 0.75rem;
+    min-width: 200px;
+}
+.font-panel.open { display: flex; }
+
+.font-panel-label {
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--warm-brown-faint);
+}
+
+.font-size-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.font-size-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-warm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    color: var(--warm-brown-light);
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+.font-size-btn:hover {
+    border-color: var(--gold-soft);
+    color: var(--warm-brown);
+    background: rgba(74,55,40,0.06);
+}
+
+.font-size-display {
+    flex: 1;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--warm-brown);
+}
+
+/* Linea / Row toggle dark */
+.theme-row {
+    display: flex;
+    gap: 0.5rem;
+}
+.theme-option {
+    flex: 1;
+    padding: 6px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border-warm);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--warm-brown-light);
+    text-align: center;
+    transition: all 0.2s;
+}
+.theme-option:hover { border-color: var(--gold-soft); color: var(--warm-brown); }
+.theme-option.active {
+    background: var(--warm-brown);
+    color: var(--cream-light);
+    border-color: var(--warm-brown);
+}
+
+/* =============================================
+   DARK / SEPIA MODES
+   ============================================= */
+body.theme-sepia {
+    --cream: #f5e6c8;
+    --cream-light: #f8edda;
+    --cream-dark: #ead9b5;
+    --text-body: #3e2e1a;
+    --text-drop: #2a1e0e;
+    --border-warm: #d4c09a;
+}
+body.theme-dark {
+    --cream: #1a1410;
+    --cream-light: #221c16;
+    --cream-dark: #2e261e;
+    --warm-brown: #d4bfa8;
+    --warm-brown-light: #a8907c;
+    --text-body: #c8b49e;
+    --text-drop: #e0cfc0;
+    --border-warm: #3a2e24;
+    --gold: #c9a96e;
+    --gold-soft: #8a7050;
+}
+
+/* =============================================
+   LOADING SKELETON
+   ============================================= */
+.skeleton {
+    background: linear-gradient(90deg,
+        rgba(74,55,40,0.06) 25%,
+        rgba(74,55,40,0.12) 50%,
+        rgba(74,55,40,0.06) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    border-radius: 4px;
+}
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+.skeleton-line {
+    height: 1em;
+    margin-bottom: 0.8em;
+    border-radius: 4px;
+}
+.skeleton-line.short  { width: 60%; }
+.skeleton-line.medium { width: 80%; }
+.skeleton-line.full   { width: 100%; }
+
+/* =============================================
+   FADE-IN ANIMATION
+   ============================================= */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+.story-body p {
+    animation: fadeUp 0.4s ease both;
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+@media (max-width: 700px) {
+    :root { --nav-h: 56px; --reading-width: 100%; }
+
+    .topnav { padding: 0 1.25rem; }
+    .nav-brand { display: none; }
+
+    .story-hero { height: 45vh; min-height: 240px; }
+    .story-hero-meta { padding: 0 1.25rem 1.5rem; }
+    .story-main-title { font-size: 1.8rem; }
+
+    .story-meta-bar  { padding: 1rem 1.25rem; gap: 0.75rem; }
+    .reading-wrap    { padding: 0 1.25rem 5rem; }
+
+    .story-body { font-size: 1rem; }
+    .story-body p:first-child::first-letter {
+        font-size: 3.6em;
+    }
+
+    .reactions-bar { padding: 1rem 1.25rem 2rem; }
+    .font-panel { right: 0.75rem; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ====== BARRA PROGRESSO LETTURA ====== -->
+<div class="reading-progress" id="readingProgress"></div>
+
+<!-- ====== NAV ====== -->
+<nav class="topnav">
+    <div class="topnav-left">
+        <a href="index.html" class="btn-back">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Indietro
+        </a>
+        <span class="nav-brand">Plotty</span>
+    </div>
+
+    <div class="topnav-right">
+        <!-- Font size toggle -->
+        <button class="nav-btn" id="btnFont" data-tip="Testo" aria-label="Impostazioni testo">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <polyline points="4 7 4 4 20 4 20 7"/>
+                <line x1="9" y1="20" x2="15" y2="20"/>
+                <line x1="12" y1="4" x2="12" y2="20"/>
+            </svg>
+        </button>
+
+        <!-- Bookmark -->
+        <button class="nav-btn" id="btnBookmark" data-tip="Salva" aria-label="Salva storia">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+        </button>
+    </div>
+</nav>
+
+<!-- ====== PANNELLO FONT ====== -->
+<div class="font-panel" id="fontPanel">
+    <span class="font-panel-label">Dimensione testo</span>
+    <div class="font-size-row">
+        <button class="font-size-btn" id="fontDecrease">A−</button>
+        <span class="font-size-display" id="fontSizeDisplay">Media</span>
+        <button class="font-size-btn" id="fontIncrease">A+</button>
+    </div>
+    <span class="font-panel-label">Tema</span>
+    <div class="theme-row">
+        <button class="theme-option active" data-theme="default">Chiaro</button>
+        <button class="theme-option" data-theme="sepia">Seppia</button>
+        <button class="theme-option" data-theme="dark">Scuro</button>
+    </div>
+</div>
+
+<!-- ====== HERO ====== -->
+<header class="story-hero">
+    <img class="story-hero-img" id="heroCover" src="img/story-1.jpg" alt="Cover storia" />
+    <div class="story-hero-overlay"></div>
+    <div class="story-hero-meta">
+        <div class="story-genre-badge" id="heroGenre">Adventure</div>
+        <h1 class="story-main-title" id="heroTitle">The Whispering Forest</h1>
+        <p class="story-author-line">di <a href="user.html" id="heroAuthor">Sakura Tanaka</a></p>
+    </div>
+</header>
+
+<!-- ====== META BAR ====== -->
+<div class="story-meta-bar">
+    <div class="meta-chip">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+        </svg>
+        <span id="metaWords">–</span>
+    </div>
+
+    <div class="meta-divider"></div>
+
+    <div class="meta-chip">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span id="metaReadTime">–</span>
+    </div>
+
+    <div class="meta-divider"></div>
+
+    <div class="meta-chip">
+        <div class="rating-stars" id="metaStars">
+            <!-- iniettato da JS -->
+        </div>
+        <span class="rating-value" id="metaRating">–</span>
+    </div>
+
+    <div class="meta-divider"></div>
+
+    <div class="meta-chip">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span id="metaViews">–</span> letture
+    </div>
+</div>
+
+<!-- ====== CORPO LETTURA ====== -->
+<div class="reading-wrap">
+
+    <!-- Abstract / Sinossi -->
+    <div class="story-summary">
+        <p id="storySummary">
+            Caricamento sinossi…
+        </p>
+    </div>
+
+    <!-- Divisore decorativo -->
+    <div class="story-divider">
+        <span class="story-divider-icon">❧</span>
+    </div>
+
+    <!-- Testo della storia — i <p> vengono scritti da JS -->
+    <div class="story-body" id="storyBody">
+        <!-- Skeleton while loading -->
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line medium"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line short"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line full"></div>
+        <div class="skeleton skeleton-line medium"></div>
+    </div>
+
+    <!-- Fine storia -->
+    <div class="story-end" id="storyEnd" style="display:none">
+        <span class="story-end-label">Fine</span>
+        <span class="story-end-title" id="storyEndTitle">The Whispering Forest</span>
+    </div>
+</div>
+
+<!-- ====== REACTIONS ====== -->
+<div class="reactions-bar">
+    <div class="reactions-left">
+        <button class="reaction-btn" id="btnLike">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+            <span class="reaction-count" id="likeCount">–</span>
+        </button>
+        <button class="reaction-btn" id="btnComment">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span class="reaction-count" id="commentCount">–</span>
+        </button>
+    </div>
+    <div class="reactions-right">
+        <button class="share-btn" id="btnShare">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            Condividi
+        </button>
+    </div>
+</div>
+
+<!-- ====== FOOTER ====== -->
+<footer style="text-align:center;padding:2rem;background:var(--warm-brown);color:rgba(250,244,235,0.7);margin-top:2rem;">
+    <p style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--cream-light);margin-bottom:0.2rem;">Plotty</p>
+    <p style="font-size:0.78rem;">A place where stories come alive.</p>
+</footer>
+
+<!-- ====================================================
+     JAVASCRIPT
+     ====================================================
+     
+     PER INTEGRARE CON IL DB:
+     Sostituisci la funzione `fetchStory(storyId)` con una
+     vera chiamata API, es:
+         const res  = await fetch(`/api/stories/${storyId}`);
+         const data = await res.json();
+     Il resto del codice non cambia.
+     ===================================================== -->
+<script>
+// ── UTILS ──────────────────────────────────────────────
+function countWords(text) {
+    return text.trim().split(/\s+/).length;
+}
+function readingTime(words) {
+    const mins = Math.ceil(words / 200);
+    return mins < 60 ? `${mins} min` : `${Math.floor(mins/60)}h ${mins%60}min`;
+}
+function renderStars(rating) {
+    let html = '';
+    for (let i = 1; i <= 5; i++) {
+        html += i <= Math.round(rating)
+            ? `<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`
+            : `<svg class="empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>`;
+    }
+    return html;
+}
+
+// ── FETCH STORIA ────────────────────────────────────────
+// ┌─────────────────────────────────────────────────────┐
+// │  SOSTITUISCI QUESTO BLOCCO CON LA TUA CHIAMATA API  │
+// │  Il json deve avere questa struttura:               │
+// │  {                                                  │
+// │    id, title, author, authorUrl, genre,             │
+// │    cover, summary, content (stringa unica),         │
+// │    rating, views, likes, comments                   │
+// │  }                                                  │
+// └─────────────────────────────────────────────────────┘
+async function fetchStory(storyId) {
+    // DEMO: dati statici — sostituisci con fetch reale
+    // const res = await fetch(`/api/stories/${storyId}`);
+    // return res.json();
+
+    await new Promise(r => setTimeout(r, 600)); // simula latenza
+
+    return {
+        id:        storyId || 1,
+        title:     "The Whispering Forest",
+        author:    "Sakura Tanaka",
+        authorUrl: "user.html",
+        genre:     "Adventure",
+        cover:     "img/story-1.jpg",
+        rating:    4.8,
+        views:     348,
+        likes:     127,
+        comments:  24,
+        summary:   "Una giovane ragazza entra in un'antica foresta dove gli alberi custodiscono i ricordi di una civiltà dimenticata. Mentre si addentra più in profondità, scopre un legame misterioso tra sé e quel luogo magico.",
+        // CONTENT: stringa unica, paragrafi separati da \n\n
+        // Un separatore di scena si ottiene con la riga: [***]
+        content: `La mattina in cui Hana varcò per la prima volta il confine della Foresta che Sussurra, l'aria sapeva di pino bagnato e di qualcosa di antico — come polvere di libri e petali secchi, come il fondo di un baule dimenticato in soffitta.
+
+Aveva quattordici anni e un cuore pieno di domande a cui sua nonna non aveva mai risposto. Nella tasca del cappotto stringeva un foglio ingiallito: una mappa disegnata a mano, i bordi bruciati, i nomi dei luoghi scritti in una lingua che non riconosceva.
+
+La foresta non aveva nulla di minaccioso, di primo acchito. I faggi si alzavano dritti verso il cielo grigio, i loro tronchi color cenere punteggiati di muschio verde smeraldo. Il sentiero era stretto ma netto, come tracciato da mille passi silenziosi prima dei suoi.
+
+[***]
+
+Fu a metà del secondo giorno che gli alberi cominciarono a parlare.
+
+Non con parole — almeno, non all'inizio. Era più un fremito nel legno, una vibrazione che risaliva dalla terra attraverso le suole delle scarpe e saliva lungo la colonna vertebrale fino alla base del collo. Hana si fermò. Appoggiò il palmo al tronco di un faggio enorme, e vide.
+
+Immagini come fotografie sovraesposte: una città di pietra bianca, torri che sfioravano le nuvole, piazze piene di gente che rideva. Poi fiamme. Poi silenzio. Poi la foresta che cresceva, lenta e inesorabile, su quello che era rimasto.
+
+Ritirò la mano di scatto, il cuore che batteva forte nel petto.
+
+[***]
+
+Quella sera accampò ai piedi di un albero così vecchio che la sua corteccia aveva preso la forma di un volto — occhi chiusi, bocca socchiusa in qualcosa che era quasi un sorriso. Hana aprì il taccuino e disegnò a memoria le immagini che aveva visto, cercando di catturare ogni dettaglio prima che svanissero.
+
+La mappa nella tasca pulsava di calore.
+
+Guardò il foglio ingiallito. Nel cerchio che sua nonna aveva tracciato al centro — quello che aveva sempre pensato fosse solo un ornamento decorativo — c'era ora un piccolo punto luminoso, come inchiostro fosforescente che nessuna luce artificiale aveva mai eccitato.
+
+Un segno di dove stava andando. O di dove era sempre stata destinata ad arrivare.
+
+Hana chiuse il taccuino, tirò su il cappotto fino al mento e ascoltò la foresta respirare intorno a lei — lenta, paziente, come chi ha tutto il tempo del mondo e sa bene che il tempo è l'unica cosa che alla fine conta davvero.
+
+[***]
+
+La mattina del terzo giorno trovò la porta.
+
+Era incastonata nel fianco di una scarpata di roccia, così coperta di radici e foglie morte che ci vollero diversi minuti per capire cosa stesse guardando. Legno scuro, quasi nero. Bordi scolpiti con figure che sembravano danzare quando la luce filtrava tra i rami.
+
+La serratura non aveva una forma che avesse mai visto. Ma quando aprì il pugno — senza nemmeno ricordare di aver messo qualcosa in mano — c'era una chiave. Piccola, d'argento annerito, con un manico a forma di foglia di faggio.
+
+Hana la inserì nella serratura.
+
+E la foresta trattenne il respiro.`
+    };
+}
+
+// ── RENDERIZZA STORIA ───────────────────────────────────
+function renderStory(story) {
+    // Hero
+    document.title = `Plotty – ${story.title}`;
+    document.getElementById('heroCover').src       = story.cover;
+    document.getElementById('heroCover').alt       = story.title;
+    document.getElementById('heroTitle').textContent  = story.title;
+    document.getElementById('heroGenre').textContent  = story.genre;
+    const authorEl = document.getElementById('heroAuthor');
+    authorEl.textContent = story.author;
+    authorEl.href        = story.authorUrl;
+
+    // Meta bar
+    const words = countWords(story.content);
+    document.getElementById('metaWords').textContent    = `${words.toLocaleString()} parole`;
+    document.getElementById('metaReadTime').textContent = readingTime(words);
+    document.getElementById('metaStars').innerHTML      = renderStars(story.rating);
+    document.getElementById('metaRating').textContent   = story.rating;
+    document.getElementById('metaViews').textContent    = story.views.toLocaleString();
+
+    // Summary
+    document.getElementById('storySummary').textContent = story.summary;
+
+    // Story end title
+    document.getElementById('storyEndTitle').textContent = story.title;
+
+    // Reactions
+    document.getElementById('likeCount').textContent    = story.likes;
+    document.getElementById('commentCount').textContent = story.comments;
+
+    // ── CORPO TESTO ──────────────────────────────────
+    // Ogni doppio \n diventa un paragrafo.
+    // La riga [***] diventa un separatore di scena.
+    const storyBody = document.getElementById('storyBody');
+    storyBody.innerHTML = '';
+
+    const blocks = story.content.split(/\n\n+/);
+    blocks.forEach((block, i) => {
+        const trimmed = block.trim();
+        if (!trimmed) return;
+
+        if (trimmed === '[***]') {
+            const sep = document.createElement('p');
+            sep.className = 'scene-break';
+            sep.textContent = '✦ ✦ ✦';
+            storyBody.appendChild(sep);
+        } else {
+            const p = document.createElement('p');
+            p.textContent = trimmed;
+            p.style.animationDelay = `${i * 0.04}s`;
+            storyBody.appendChild(p);
+        }
+    });
+
+    // Mostra fine storia
+    document.getElementById('storyEnd').style.display = 'flex';
+}
+
+// ── INIT ────────────────────────────────────────────────
+async function init() {
+    // Legge l'id dalla query string: story.html?id=42
+    const params  = new URLSearchParams(window.location.search);
+    const storyId = params.get('id') || 1;
+
+    try {
+        const story = await fetchStory(storyId);
+        renderStory(story);
+    } catch (err) {
+        document.getElementById('storyBody').innerHTML =
+            '<p style="color:var(--rose-muted);text-indent:0">Errore nel caricamento della storia. Riprova più tardi.</p>';
+        console.error(err);
+    }
+}
+
+// ── PROGRESSO LETTURA ───────────────────────────────────
+function updateProgress() {
+    const scrollTop  = window.scrollY;
+    const docHeight  = document.documentElement.scrollHeight - window.innerHeight;
+    const pct        = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    document.getElementById('readingProgress').style.width = `${pct}%`;
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+
+// ── FONT SIZE ───────────────────────────────────────────
+const fontSizes  = ['Piccola', 'Media', 'Grande', 'Extra'];
+const fontValues = ['0.92rem', '1.08rem', '1.18rem', '1.3rem'];
+let fontIdx = 1;
+
+function applyFontSize() {
+    document.getElementById('storyBody').style.fontSize = fontValues[fontIdx];
+    document.getElementById('fontSizeDisplay').textContent = fontSizes[fontIdx];
+}
+
+document.getElementById('fontIncrease').addEventListener('click', () => {
+    if (fontIdx < fontSizes.length - 1) { fontIdx++; applyFontSize(); }
+});
+document.getElementById('fontDecrease').addEventListener('click', () => {
+    if (fontIdx > 0) { fontIdx--; applyFontSize(); }
+});
+
+// Toggle pannello font
+const btnFont  = document.getElementById('btnFont');
+const fontPanel = document.getElementById('fontPanel');
+btnFont.addEventListener('click', (e) => {
+    e.stopPropagation();
+    fontPanel.classList.toggle('open');
+    btnFont.classList.toggle('active');
+});
+document.addEventListener('click', (e) => {
+    if (!fontPanel.contains(e.target) && e.target !== btnFont) {
+        fontPanel.classList.remove('open');
+        btnFont.classList.remove('active');
+    }
+});
+
+// ── TEMA ────────────────────────────────────────────────
+document.querySelectorAll('.theme-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const theme = btn.dataset.theme;
+        document.body.className = theme === 'default' ? '' : `theme-${theme}`;
+    });
+});
+
+// ── BOOKMARK ────────────────────────────────────────────
+const btnBookmark = document.getElementById('btnBookmark');
+btnBookmark.addEventListener('click', () => {
+    btnBookmark.classList.toggle('active');
+    // Qui puoi chiamare l'API per salvare il bookmark
+    // fetch('/api/bookmarks', { method: 'POST', body: JSON.stringify({ storyId }) })
+});
+
+// ── LIKE ────────────────────────────────────────────────
+document.getElementById('btnLike').addEventListener('click', function() {
+    this.classList.toggle('active');
+    const count = document.getElementById('likeCount');
+    const cur   = parseInt(count.textContent) || 0;
+    count.textContent = this.classList.contains('active') ? cur + 1 : cur - 1;
+    // fetch('/api/likes', { method: 'POST', body: JSON.stringify({ storyId }) })
+});
+
+// ── SHARE ───────────────────────────────────────────────
+document.getElementById('btnShare').addEventListener('click', async () => {
+    const url   = window.location.href;
+    const title = document.getElementById('heroTitle').textContent;
+    if (navigator.share) {
+        await navigator.share({ title: `Plotty – ${title}`, url });
+    } else {
+        navigator.clipboard.writeText(url);
+        const btn = document.getElementById('btnShare');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '✓ Copiato!';
+        setTimeout(() => { btn.innerHTML = orig; }, 1800);
+    }
+});
+
+// ── AVVIO ───────────────────────────────────────────────
+init();
+</script>
+
+</body>
+</html>
