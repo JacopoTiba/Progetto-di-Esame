@@ -6,9 +6,9 @@ def genera_codice():
     # Crea il codice a 6 cifre (Rif. Python-Thread.pdf per generazione dati atomica)
     return str(random.randint(100000, 999999))
 
-def invia_mail_codice(destinatario, codice):
+def invia_mail_codice(destinatario, codice, credenziali):
     msg = EmailMessage()
-    msg.set_content(f"Ciao! Il tuo codice di verifica per Plotty è: {codice}")
+    msg.set_content(f"Ciao {credenziali.nome}! Il tuo codice di verifica per Plotty è: {codice}")
     msg['Subject'] = 'Codice di Verifica Plotty'
     msg['From'] = "tua_mail@gmail.com"  # <--- METTI LA TUA MAIL QUI
     msg['To'] = destinatario
