@@ -39,7 +39,7 @@ def registrazione():
             }}
         )
         
-        if invia_mail_codice(email, codice_verifica):
+        if invia_mail_codice(email, codice_verifica,nome):
             return jsonify({"message": "Nuovo codice inviato! Controlla la mail."}), 201
         return jsonify({"message": "Errore tecnico nell'invio mail."}), 500
 
@@ -52,7 +52,7 @@ def registrazione():
         "verificato": False
     }
 
-    if invia_mail_codice(email, codice_verifica):
+    if invia_mail_codice(email, codice_verifica,nome):
         credenziali.insert_one(nuovo_utente)
         return jsonify({"message": "Registrazione avviata! Codice inviato via mail."}), 201
     
@@ -86,6 +86,7 @@ def login():
             return jsonify({"message": "Account non ancora verificato via mail!"}), 403
     
     return jsonify({"message": "Credenziali errate"}), 401
+
 @app.route('/api/richiedi-codice', methods=['POST'])
 def richiedi_codice():
     email = request.json.get('email')
@@ -96,7 +97,7 @@ def richiedi_codice():
         # Aggiorniamo l'utente esistente con il nuovo codice
         credenziali.update_one({"email": email}, {"$set": {"codice_verifica": codice}})
         
-        if invia_mail_codice(email, codice, credenziali):
+        if invia_mail_codice(email, codice, utente.get('nome')):
             return jsonify({"message": "Codice inviato via mail!"}), 200
         return jsonify({"message": "Errore tecnico nell'invio"}), 500
     
