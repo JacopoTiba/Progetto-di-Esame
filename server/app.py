@@ -16,27 +16,47 @@ def index():
 def registrazione():
     data = request.json
     email = data.get('email')
-    
-    # Generiamo un codice di 6 cifre
+    password = data.get('password')
+    nome = data.get('nome')
     codice_verifica = genera_codice()
     
+    # 1. Cerchiamo se l'email esiste già nel database
+    utente_esistente = credenziali.find_one({"email": email})
+
+    if utente_esistente:
+        # SCENARIO A: L'utente è già attivo (verificato: True)
+        if utente_esistente.get('verificato') == True:
+            return jsonify({"message": "Email già registrata. Vai al login!"}), 400
+        
+        # SCENARIO B: L'utente esiste ma NON è verificato (Il tuo Bug!)
+        # Aggiorniamo solo il codice e la password (se l'ha cambiata) senza creare doppioni
+        credenziali.update_one(
+            {"email": email}, 
+            {"$set": {
+                "codice_verifica": codice_verifica,
+                "password": password, # Utile se ha sbagliato a scriverla prima
+                "nome": nome
+            }}
+        )
+        
+        if invia_mail_codice(email, codice_verifica):
+            return jsonify({"message": "Nuovo codice inviato! Controlla la mail."}), 201
+        return jsonify({"message": "Errore tecnico nell'invio mail."}), 500
+
+    # SCENARIO C: L'utente è nuovo di zecca
     nuovo_utente = {
-        "nome": data.get('nome'),
+        "nome": nome,
         "email": email,
-        "password": data.get('password'),
+        "password": password,
         "codice_verifica": codice_verifica,
-        "verificato": False  # L'utente è "bloccato" finché non mette il codice
+        "verificato": False
     }
 
-    if credenziali.find_one({"email": email}):
-        return jsonify({"message": "Email già esistente"}), 400
-
-    # Invio Mail (Protocollo SMTP)
     if invia_mail_codice(email, codice_verifica):
         credenziali.insert_one(nuovo_utente)
-        return jsonify({"message": "Registrazione avviata! Controlla la mail per il codice."}), 201
-    else:
-        return jsonify({"message": "Errore invio mail, riprova."}), 500
+        return jsonify({"message": "Registrazione avviata! Codice inviato via mail."}), 201
+    
+    return jsonify({"message": "Errore invio mail, riprova."}), 500
 
 
 @app.route('/api/verifica-codice', methods=['POST'])
@@ -76,7 +96,7 @@ def richiedi_codice():
         # Aggiorniamo l'utente esistente con il nuovo codice
         credenziali.update_one({"email": email}, {"$set": {"codice_verifica": codice}})
         
-        if invia_mail_codice(email, codice):
+        if invia_mail_codice(email, codice, credenziali):
             return jsonify({"message": "Codice inviato via mail!"}), 200
         return jsonify({"message": "Errore tecnico nell'invio"}), 500
     
