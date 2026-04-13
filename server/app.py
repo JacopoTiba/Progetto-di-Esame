@@ -99,10 +99,75 @@ def richiedi_codice():
 
 @app.route('/api/storie', methods=['GET'])
 def get_storie():
-    # Recupera le storie dal DB (escludendo l'ID di Mongo per pulizia JSON)
-    lista = list(storie.find({}, {"_id": 0}))
+    from bson import ObjectId
+    lista = []
+    for storia in storie.find():
+        # Cerchiamo l'autore tramite idUtente
+        autore = credenziali.find_one({"_id": storia.get('idUtente')})
+        
+        lista.append({
+            "id": str(storia['_id']),
+            "titolo": storia.get('titolo', ''),
+            "descrizione": storia.get('descrizione', ''),
+            "genere": storia.get('genere', ''),
+            "imgStoria": storia.get('imgStoria', ''),
+            "capitoli": storia.get('capitoli', 0),
+            "nLike": storia.get('nLike', 0),
+            "completa": storia.get('completa', False),
+            "idUtente": str(storia.get('idUtente', '')),
+            "autore": autore.get('username') if autore else "Autore sconosciuto"
+        })
+    
     return jsonify({"storie": lista}), 200
 
-if __name__ == '__main__':
-    app.run(debug=True, port=3000)
+@app.route('/api/storie/<id>', methods=['GET'])
+def get_storia(id):
+    from bson import ObjectId
+    storia = storie.find_one({"_id": ObjectId(id)})
+    if not storia:
+        return jsonify({"message": "Storia non trovata"}), 404
+    
+    autore = credenziali.find_one({"_id": storia.get('idUtente')})
+    
+    return jsonify({
+        "id": str(storia['_id']),
+        "titolo": storia.get('titolo', ''),
+        "contenuto": storia.get('contenuto', ''),
+        "descrizione": storia.get('descrizione', ''),
+        "genere": storia.get('genere', ''),
+        "imgStoria": storia.get('imgStoria', ''),
+        "capitoli": storia.get('capitoli', 0),
+        "nLike": storia.get('nLike', 0),
+        "completa": storia.get('completa', False),
+        "idUtente": str(storia.get('idUtente', '')),
+        "autore": autore.get('username') if autore else "Autore sconosciuto"
+    }), 200
 
+@app.route('/api/utenti/<id>', methods=['GET'])
+def get_utente(id):
+    from bson import ObjectId
+    utente = credenziali.find_one({"_id": ObjectId(id)})
+    if not utente:
+        return jsonify({"message": "Utente non trovato"}), 404
+    
+    # Cerchiamo le storie dell'utente
+    storie_utente = list(storie.find({"idUtente": ObjectId(id)}))
+    lista_storie = []
+    for storia in storie_utente:
+        lista_storie.append({
+            "id": str(storia['_id']),
+            "titolo": storia.get('titolo', ''),
+            "descrizione": storia.get('descrizione', ''),
+            "genere": storia.get('genere', ''),
+            "imgStoria": storia.get('imgStoria', ''),
+            "capitoli": storia.get('capitoli', 0),
+            "nLike": storia.get('nLike', 0),
+        })
+    
+    return jsonify({
+        "id": str(utente['_id']),
+        "nome": utente.get('nome', ''),
+        "cognome": utente.get('cognome', ''),
+        "username": utente.get('username', ''),
+        "storie": lista_storie
+    }), 200
