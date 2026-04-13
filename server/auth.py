@@ -8,14 +8,13 @@ def genera_codice():
 
 def invia_mail_codice(destinatario, codice, credenziali):
     msg = EmailMessage()
-    msg.set_content(f"Ciao {credenziali.nome}! Il tuo codice di verifica per Plotty è: {codice}")
+    msg.set_content(f"Ciao {credenziali}! Il tuo codice di verifica per Plotty è: {codice}")
     msg['Subject'] = 'Codice di Verifica Plotty'
-    msg['From'] = "tua_mail@gmail.com"  # <--- METTI LA TUA MAIL QUI
+    msg['From'] = "tibaldijacopo@gmail.com"  # <--- METTI LA TUA MAIL QUI
     msg['To'] = destinatario
 
     try:
-        # Protocollo SMTP (Rif. Python-Socket.pdf - Livello Applicativo)
-        # Usiamo la porta 465 per una connessione sicura SSL
+       
         with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
             # QUI DEVI USARE LA PASSWORD PER LE APP DI GOOGLE
             smtp.login("tibaldijacopo@gmail.com", "sojk hhjy wvpf qnco") 

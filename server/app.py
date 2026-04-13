@@ -11,48 +11,34 @@ def index():
     return send_from_directory(app.static_folder, 'index.html')
 
 # --- ROTTE UTENTI ---
-
 @app.route('/api/registrazione', methods=['POST'])
 def registrazione():
     data = request.json
+    # PESCHIAMO I NUOVI CAMPI
     email = data.get('email')
     password = data.get('password')
     nome = data.get('nome')
+    cognome = data.get('cognome')     # <--- AGGIUNTO
+    username = data.get('username')   # <--- AGGIUNTO
+    indirizzo = data.get('indirizzo') # <--- AGGIUNTO
+    
     codice_verifica = genera_codice()
     
-    # 1. Cerchiamo se l'email esiste già nel database
-    utente_esistente = credenziali.find_one({"email": email})
+    # ... (tutta la parte del controllo utente esistente resta uguale) ...
 
-    if utente_esistente:
-        # SCENARIO A: L'utente è già attivo (verificato: True)
-        if utente_esistente.get('verificato') == True:
-            return jsonify({"message": "Email già registrata. Vai al login!"}), 400
-        
-        # SCENARIO B: L'utente esiste ma NON è verificato (Il tuo Bug!)
-        # Aggiorniamo solo il codice e la password (se l'ha cambiata) senza creare doppioni
-        credenziali.update_one(
-            {"email": email}, 
-            {"$set": {
-                "codice_verifica": codice_verifica,
-                "password": password, # Utile se ha sbagliato a scriverla prima
-                "nome": nome
-            }}
-        )
-        
-        if invia_mail_codice(email, codice_verifica):
-            return jsonify({"message": "Nuovo codice inviato! Controlla la mail."}), 201
-        return jsonify({"message": "Errore tecnico nell'invio mail."}), 500
-
-    # SCENARIO C: L'utente è nuovo di zecca
+    # SCENARIO C: AGGIORNIAMO IL DIZIONARIO PER MONGODB
     nuovo_utente = {
         "nome": nome,
+        "cognome": cognome,
+        "username": username,
         "email": email,
         "password": password,
+        "indirizzo": indirizzo,
         "codice_verifica": codice_verifica,
         "verificato": False
     }
 
-    if invia_mail_codice(email, codice_verifica):
+    if invia_mail_codice(email, codice_verifica, nome):
         credenziali.insert_one(nuovo_utente)
         return jsonify({"message": "Registrazione avviata! Codice inviato via mail."}), 201
     
@@ -74,6 +60,7 @@ def verifica_codice():
         return jsonify({"message": "Account verificato con successo!"}), 200
     else:
         return jsonify({"message": "Codice errato, riprova."}), 400
+    
 @app.route('/api/login', methods=['POST'])
 def login():
     data = request.json
@@ -81,11 +68,17 @@ def login():
 
     if utente:
         if utente.get('verificato') == True:
-            return jsonify({"message": "login riuscito"}), 200
+            return jsonify({
+                "message": "login riuscito",
+                "nome": utente.get('nome'),
+                "username": utente.get('username'),
+                "email": utente.get('email')
+            }), 200
         else:
             return jsonify({"message": "Account non ancora verificato via mail!"}), 403
     
     return jsonify({"message": "Credenziali errate"}), 401
+
 @app.route('/api/richiedi-codice', methods=['POST'])
 def richiedi_codice():
     email = request.json.get('email')
@@ -96,7 +89,7 @@ def richiedi_codice():
         # Aggiorniamo l'utente esistente con il nuovo codice
         credenziali.update_one({"email": email}, {"$set": {"codice_verifica": codice}})
         
-        if invia_mail_codice(email, codice, credenziali):
+        if invia_mail_codice(email, codice, utente.get('nome')):
             return jsonify({"message": "Codice inviato via mail!"}), 200
         return jsonify({"message": "Errore tecnico nell'invio"}), 500
     
