@@ -5,7 +5,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Plotty - Home</title>
-    
+    <script src="auth-check.js"></script>
+    <script>checkAuth();</script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -995,6 +996,27 @@ img {
     }
 }
 </style>
+<!-- TEST PER VERIFICARE IL FUNZIONAMENTO DEL COOKIE DOPO LOGIN (da rimuovere)  
+<script>
+    function getCookie(name) {
+        const match = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='));
+        if (!match) return null;
+        try {
+            return JSON.parse(decodeURIComponent(match.split('=').slice(1).join('=')));
+        } catch {
+            return null;
+        }
+    }
+
+    const utente = getCookie('utente');
+    if (utente) {
+        alert(`Benvenuto, ${utente.nome}!\nUsername: ${utente.username}`);
+    } else {
+        alert('Nessun cookie trovato — utente non loggato.');
+    }
+</script> -->
 <body>
     <div class="bg-layer" aria-hidden="true"></div>
     <div class="bg-overlay" aria-hidden="true"></div>
