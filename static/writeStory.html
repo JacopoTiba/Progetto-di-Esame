@@ -1547,6 +1547,7 @@ async function saveDraft() {
 
 // ── BUILD PAYLOAD ────────────────────────────────────────
 function buildPayload() {
+    const usr = checkAuth();
     return {
         title:       titleEl.value.trim(),
         summary:     summaryEl.value.trim(),
@@ -1554,26 +1555,23 @@ function buildPayload() {
         genre:       selectedGenre,
         tags:        [...tags],
         status:      status,
-        coverBase64: coverBase64 || null
+        coverBase64: coverBase64 || null,
+        autore_email: usr ? usr.email : null
     };
 }
 
 // ── PUBLISH ──────────────────────────────────────────────
 async function publishStory(payload) {
-    // ┌─────────────────────────────────────────────────────┐
-    // │  SOSTITUISCI CON LA TUA CHIAMATA API:               │
-    // │                                                     │
-    // │  const res = await fetch('/api/stories', {          │
-    // │      method: 'POST',                                │
-    // │      headers: {'Content-Type':'application/json'},  │
-    // │      body: JSON.stringify(payload)                  │
-    // │  });                                                │
-    // │  const data = await res.json();                     │
-    // │  // data = { id, slug }                             │
-    // │  window.location.href = `story.html?id=${data.id}`; │
-    // └─────────────────────────────────────────────────────┘
-    await new Promise(r => setTimeout(r, 900)); // simula latenza
-    return { id: Math.floor(Math.random() * 9000) + 1000 };
+    const res = await fetch('/api/storie', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+        throw new Error("Errore durante la pubblicazione");
+    }
+    const data = await res.json();
+    return data;
 }
 
 publishBtns.forEach(btn => {

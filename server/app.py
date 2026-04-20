@@ -2,6 +2,16 @@ from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from .database import credenziali, storie
 from .auth import genera_codice, invia_mail_codice
+import os
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+cloudinary.config(
+  cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'),
+  api_key = os.getenv('CLOUDINARY_API_KEY'),
+  api_secret = os.getenv('CLOUDINARY_API_SECRET')
+)
 
 app = Flask(__name__, static_folder='../static', static_url_path='')
 CORS(app)
@@ -97,6 +107,51 @@ def richiedi_codice():
 
 # --- ROTTE CONTENUTI ---
 
+@app.route('/api/storie', methods=['POST'])
+def crea_storia():
+    data = request.json
+    
+    # 1. Troviamo l'utente tramite l'email inviata dal frontend
+    email_autore = data.get('autore_email')
+    if not email_autore:
+        return jsonify({"message": "Non autorizzato"}), 401
+        
+    utente = credenziali.find_one({"email": email_autore})
+    if not utente:
+        return jsonify({"message": "Utente non trovato o non autorizzato"}), 403
+
+    # 2. Gestiamo il caricamento immagine su Cloudinary
+    img_url = ""
+    cover_base64 = data.get('coverBase64')
+    if cover_base64:
+        try:
+            # Cloudinary supporta l'upload diretto di stringhe base64
+            upload_result = cloudinary.uploader.upload(cover_base64)
+            img_url = upload_result.get('secure_url', '')
+        except Exception as e:
+            return jsonify({"message": f"Errore caricamento immagine: {str(e)}"}), 500
+
+    # 3. Costruiamo e salviamo la storia
+    nuova_storia = {
+        "titolo": data.get('title', ''),
+        "descrizione": data.get('summary', ''),
+        "contenuto": data.get('content', ''),
+        "genere": data.get('genre', ''),
+        "tags": data.get('tags', []),
+        "status": data.get('status', 'draft'),
+        "imgStoria": img_url,
+        "capitoli": 1,
+        "nLike": 0,
+        "completa": False,
+        "idUtente": utente.get('_id')
+    }
+    
+    result = storie.insert_one(nuova_storia)
+    return jsonify({
+        "message": "Storia salvata con successo", 
+        "id": str(result.inserted_id)
+    }), 201
+
 @app.route('/api/storie', methods=['GET'])
 def get_storie():
     from bson import ObjectId
@@ -171,3 +226,6 @@ def get_utente(id):
         "username": utente.get('username', ''),
         "storie": lista_storie
     }), 200
+
+if __name__ == "__main__":
+    app.run(port=3000, debug=True)

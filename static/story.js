@@ -24,7 +24,7 @@ async function caricaStoria() {
         document.title = `Plotty – ${storia.titolo}`;
 
         // Hero
-        document.getElementById('heroCover').src = storia.imgStoria || 'img/story-1.jpg';
+        document.getElementById('heroCover').src = storia.imgStoria || 'https://res.cloudinary.com/drwzjt2oi/image/upload/v1776681940/plotty/layout/story-1.jpg';
         document.getElementById('heroTitle').textContent = storia.titolo;
         document.getElementById('heroGenre').textContent = storia.genere;
 

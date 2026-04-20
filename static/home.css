@@ -69,7 +69,7 @@ img {
 .bg-layer {
     position: fixed;
     inset: 0;
-    background: url('img/img1.webp') center / cover no-repeat;
+    background: url('https://res.cloudinary.com/drwzjt2oi/image/upload/v1776681929/plotty/layout/img1.webp') center / cover no-repeat;
     z-index: 0;
     filter: blur(2px) saturate(1.1); /* Ridotto l'effetto blur */
 }

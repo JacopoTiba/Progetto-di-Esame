@@ -24,7 +24,7 @@ async function caricaStorie() {
                 <article class="story-card">
                     <div class="card-image">
                         <img src="${storia.imgStoria}" alt="${storia.titolo}" 
-                             onerror="this.src='img/story-1.jpg'" />
+                             onerror="this.style.display='none'" />
                         <div class="card-badge">${storia.genere}</div>
                     </div>
                     <div class="card-body">

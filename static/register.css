@@ -30,7 +30,7 @@ html, body {
 .bg-layer {
     position: fixed;
     inset: 0;
-    background: url('img/ghibli-bg.png') center / cover no-repeat;
+    background: url('https://res.cloudinary.com/drwzjt2oi/image/upload/v1776681918/plotty/layout/ghibli-bg.png') center / cover no-repeat;
     z-index: 0;
     filter: blur(6px) saturate(1.1);
     transform: scale(1.05);
