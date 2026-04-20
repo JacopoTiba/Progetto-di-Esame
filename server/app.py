@@ -6,6 +6,10 @@ import os
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+from dotenv import load_dotenv
+
+# Carichiamo esplicitamente il .env anche qui
+load_dotenv()
 
 cloudinary.config(
   cloud_name = os.getenv('CLOUDINARY_CLOUD_NAME'),
@@ -110,25 +114,30 @@ def richiedi_codice():
 @app.route('/api/storie', methods=['POST'])
 def crea_storia():
     data = request.json
+    if not data:
+        return jsonify({"message": "Dati mancanti"}), 400
     
     # 1. Troviamo l'utente tramite l'email inviata dal frontend
     email_autore = data.get('autore_email')
+    print(f"[DEBUG] Pubblicazione da: {email_autore}")
     if not email_autore:
-        return jsonify({"message": "Non autorizzato"}), 401
+        return jsonify({"message": "Non autorizzato: email mancante"}), 401
         
     utente = credenziali.find_one({"email": email_autore})
     if not utente:
-        return jsonify({"message": "Utente non trovato o non autorizzato"}), 403
+        return jsonify({"message": f"Utente non trovato: {email_autore}"}), 403
 
     # 2. Gestiamo il caricamento immagine su Cloudinary
     img_url = ""
     cover_base64 = data.get('coverBase64')
     if cover_base64:
         try:
-            # Cloudinary supporta l'upload diretto di stringhe base64
+            print("[DEBUG] Caricamento immagine su Cloudinary...")
             upload_result = cloudinary.uploader.upload(cover_base64)
             img_url = upload_result.get('secure_url', '')
+            print(f"[DEBUG] Immagine caricata: {img_url}")
         except Exception as e:
+            print(f"[DEBUG] Errore Cloudinary: {e}")
             return jsonify({"message": f"Errore caricamento immagine: {str(e)}"}), 500
 
     # 3. Costruiamo e salviamo la storia
@@ -147,6 +156,7 @@ def crea_storia():
     }
     
     result = storie.insert_one(nuova_storia)
+    print(f"[DEBUG] Storia salvata con id: {result.inserted_id}")
     return jsonify({
         "message": "Storia salvata con successo", 
         "id": str(result.inserted_id)
