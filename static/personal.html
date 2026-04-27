@@ -9,6 +9,7 @@
   <script>checkAuth();</script>
   <script src="personal.js"></script>
   <link rel="stylesheet" href="personal.css" />
+  <script src="personal.js" defer></script>
 </head>
 
 <body>
@@ -173,6 +174,19 @@
     <div class="story-grid">
     </div>
   </main>
+
+  <!-- SEZIONE LIBRI PREFERITI -->
+  <section class="favorites-section">
+    <div class="section-head">
+      <h2 class="section-title">I Tuoi Preferiti</h2>
+      <div class="section-rule"></div>
+      <span class="section-count" id="favCount">0 libri</span>
+    </div>
+
+    <div class="favorites-grid" id="favoritesGrid">
+      <p class="empty-state">Nessun libro aggiunto ai preferiti.</p>
+    </div>
+  </section>
 
   <footer class="site-footer">
     <span class="footer-brand">Plotty</span>
