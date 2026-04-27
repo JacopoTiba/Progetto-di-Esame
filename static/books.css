@@ -1,0 +1,29 @@
+.books-main {
+  padding-top: 7rem;
+}
+
+.books-header {
+  margin-bottom: 1rem;
+}
+
+.books-count {
+  color: var(--warm-brown-light);
+  font-family: 'Nunito', sans-serif;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+#booksGrid .story-card {
+  animation: fadeInUp .35s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

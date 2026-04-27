@@ -21,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
             username: res.username,
             email: res.email,
           };
-          document.cookie = `utente=${JSON.stringify(userData)}; path=/; max-age=${7 * 24 * 60 * 60}`;
+          document.cookie = `utente=${encodeURIComponent(JSON.stringify(userData))}; path=/; max-age=${7 * 24 * 60 * 60}`;
 
           ui.mostraMessaggio("Accesso eseguito! Benvenuto.", "successo");
           setTimeout(() => {

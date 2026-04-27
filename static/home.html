@@ -40,7 +40,7 @@
 
     <!-- ====== TOP NAVIGATION ====== -->
     <nav class="topnav">
-        <div class="topnav-brand">Plotty</div>
+        <div class="topnav-brand">Pl<em>o</em>tty</div>
 
         <div class="topnav-right">
             <form class="search-form-right">
@@ -179,89 +179,11 @@
                 <div class="modal-reviews-section">
                     <div class="reviews-header">
                         <h3 class="reviews-title">Reviews</h3>
-                        <span class="reviews-count">24 reviews</span>
+                        <span class="reviews-count" id="modalReviewsCount">0 reviews</span>
                     </div>
 
-                    <div class="reviews-scroll">
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="review-avatar">
-                                    <img src="img/avatar1.jpg" alt="User avatar">
-                                </div>
-                                <div class="review-user">
-                                    <p class="review-name">Emily Rose</p>
-                                    <p class="review-date">2 days ago</p>
-                                </div>
-                                <div class="review-rating">
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                </div>
-                            </div>
-                            <p class="review-text">Absolutely magical! The world-building is incredible and I felt completely transported to the forest. The protagonist is so relatable and her journey touched my heart deeply.</p>
-                        </div>
-
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="review-avatar">
-                                    <img src="img/avatar2.jpg" alt="User avatar">
-                                </div>
-                                <div class="review-user">
-                                    <p class="review-name">Marco Bianchi</p>
-                                    <p class="review-date">5 days ago</p>
-                                </div>
-                                <div class="review-rating">
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg class="empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                </div>
-                            </div>
-                            <p class="review-text">Beautiful prose and atmospheric storytelling. The mystery unfolds at a perfect pace. Some chapters felt a bit slow but overall a wonderful read that I highly recommend.</p>
-                        </div>
-
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="review-avatar">
-                                    <img src="img/avatar3.jpg" alt="User avatar">
-                                </div>
-                                <div class="review-user">
-                                    <p class="review-name">Yuki Sato</p>
-                                    <p class="review-date">1 week ago</p>
-                                </div>
-                                <div class="review-rating">
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                </div>
-                            </div>
-                            <p class="review-text">This story reminded me of Studio Ghibli films - whimsical yet profound. The ending made me cry! Cannot wait for the next chapter to be released.</p>
-                        </div>
-
-                        <div class="review-card">
-                            <div class="review-header">
-                                <div class="review-avatar">
-                                    <img src="img/avatar4.jpg" alt="User avatar">
-                                </div>
-                                <div class="review-user">
-                                    <p class="review-name">Luna Chen</p>
-                                    <p class="review-date">2 weeks ago</p>
-                                </div>
-                                <div class="review-rating">
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                    <svg class="empty" viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                                </div>
-                            </div>
-                            <p class="review-text">A captivating tale that blends fantasy with deep emotional themes. The author has a gift for creating vivid imagery that lingers in your mind long after reading.</p>
-                        </div>
+                    <div class="reviews-scroll" id="modalReviewsList">
+                        <p class="review-empty">No reviews yet.</p>
                     </div>
                 </div>
             </div>

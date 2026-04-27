@@ -47,6 +47,13 @@
                 <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
             </svg>
         </button>
+
+        <a class="nav-btn" href="personal.html" data-tip="Profilo" aria-label="Il mio profilo">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+        </a>
     </div>
 </nav>
 
@@ -177,6 +184,30 @@
         </button>
     </div>
 </div>
+
+<section class="reviews-section" id="reviewsSection">
+    <h2 class="reviews-title">Recensioni</h2>
+
+    <form id="reviewForm" class="review-form">
+        <div class="review-form-row">
+            <label for="reviewRating">Voto</label>
+            <select id="reviewRating" required>
+                <option value="">Seleziona</option>
+                <option value="5">5 - Eccellente</option>
+                <option value="4">4 - Ottimo</option>
+                <option value="3">3 - Buono</option>
+                <option value="2">2 - Discreto</option>
+                <option value="1">1 - Scarso</option>
+            </select>
+        </div>
+        <textarea id="reviewText" rows="4" placeholder="Scrivi la tua recensione..." required></textarea>
+        <button type="submit" class="share-btn">Pubblica recensione</button>
+    </form>
+
+    <div id="reviewsList" class="reviews-list">
+        <p class="reviews-empty">Caricamento recensioni...</p>
+    </div>
+</section>
 
 <!-- ====== FOOTER ====== -->
 <footer class="site-footer">
