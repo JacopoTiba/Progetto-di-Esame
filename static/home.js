@@ -1,5 +1,6 @@
 let allStorie = [];
-let isSearching = false;
+let currentFilter = "All";
+let searchQuery = "";
 
 async function caricaStorie() {
   try {
@@ -56,7 +57,6 @@ function visualizzaStorie(storie) {
     grid.innerHTML += card;
   });
 
-  // Aggiungi event listener ai bottoni Read
   aggiungiEventListenerRead();
 }
 
@@ -89,37 +89,49 @@ function aggiungiEventListenerRead() {
   });
 }
 
+// Applica filtri (ricerca + genere)
+function applyFilters() {
+  let filtered = allStorie;
+
+  // Filtro ricerca
+  if (searchQuery.trim()) {
+    filtered = filtered.filter(s => 
+      s.titolo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.autore.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }
+
+  // Filtro genere
+  if (currentFilter !== "All") {
+    filtered = filtered.filter(s => s.genere === currentFilter);
+  }
+
+  // Se c'è ricerca o filtro genere, mostra tutti i risultati; altrimenti solo i primi 6
+  const isFiltered = searchQuery.trim() !== "" || currentFilter !== "All";
+  const toShow = isFiltered ? filtered : filtered.slice(0, 6);
+  
+  visualizzaStorie(toShow);
+}
+
 // Filtro per genere (tag buttons)
 function filterByGenre(genre) {
+  currentFilter = genre;
+  
   const tags = document.querySelectorAll(".tag");
   tags.forEach(tag => tag.classList.remove("active"));
   
-  let filtered = allStorie;
-  if (genre !== "All") {
-    filtered = allStorie.filter(s => s.genere === genre);
+  const activeTag = Array.from(tags).find(tag => tag.textContent.trim() === genre);
+  if (activeTag) {
+    activeTag.classList.add("active");
   }
   
-  // Se in ricerca, mostra tutti i filtrati; altrimenti mostra solo i primi 6
-  const toShow = isSearching ? filtered : filtered.slice(0, 6);
-  visualizzaStorie(toShow);
-  
-  // Marca il tag come attivo
-  event.target.classList.add("active");
+  applyFilters();
 }
 
 // Ricerca per titolo e autore
 function handleSearch(query) {
-  if (!query.trim()) {
-    isSearching = false;
-    visualizzaStorie(allStorie.slice(0, 6));
-  } else {
-    isSearching = true;
-    const searched = allStorie.filter(s => 
-      s.titolo.toLowerCase().includes(query.toLowerCase()) ||
-      s.autore.toLowerCase().includes(query.toLowerCase())
-    );
-    visualizzaStorie(searched);
-  }
+  searchQuery = query;
+  applyFilters();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -144,6 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
       handleSearch(searchInput.value);
     });
     
+    // Ricerca in tempo reale mentre digiti
     searchInput.addEventListener("input", (e) => {
       handleSearch(e.target.value);
     });
