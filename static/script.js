@@ -14,19 +14,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
       try {
         const res = await api.apiLogin(email, password);
-      if (res.message === "login riuscito") {
+        if (res.message === "login riuscito") {
           const userData = {
-              nome: res.nome,
-              username: res.username,
-              email: res.email
+            id: res.id,
+            nome: res.nome,
+            username: res.username,
+            email: res.email,
           };
           document.cookie = `utente=${JSON.stringify(userData)}; path=/; max-age=${7 * 24 * 60 * 60}`;
 
           ui.mostraMessaggio("Accesso eseguito! Benvenuto.", "successo");
           setTimeout(() => {
-              window.location.href = "home.html";
+            window.location.href = "home.html";
           }, 1200);
-      } else {
+        } else {
           ui.mostraMessaggio(res.message, "errore");
         }
       } catch (error) {

@@ -84,6 +84,7 @@ def login():
         if utente.get('verificato') == True:
             return jsonify({
                 "message": "login riuscito",
+                "id": str(utente['_id']),
                 "nome": utente.get('nome'),
                 "username": utente.get('username'),
                 "email": utente.get('email')
