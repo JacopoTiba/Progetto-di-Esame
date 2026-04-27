@@ -74,6 +74,47 @@ async function caricaUtente() {
         alert('Errore nel caricamento del profilo!');
         window.location.href = 'home.html';
     }
+
+    // Carica libri preferiti dell'utente
+    try {
+        const res2 = await fetch(`/api/utenti/${id}/preferiti`);
+        const favoriteData = await res2.json();
+        const preferiti = favoriteData.preferiti || [];
+        
+        const favGrid = document.getElementById('favoritesGrid');
+        const favCount = document.getElementById('favCount');
+        
+        if (preferiti.length === 0) {
+            favGrid.innerHTML = '<p class="empty-state">Nessun libro aggiunto ai preferiti.</p>';
+            favCount.textContent = '0 libri';
+            return;
+        }
+
+        favCount.textContent = `${preferiti.length} libr${preferiti.length === 1 ? 'o' : 'i'}`;
+        favGrid.innerHTML = '';
+
+        preferiti.forEach(libro => {
+            const favCard = `
+                <article class="favorite-card">
+                    <div class="fav-thumb">
+                        <img src="${libro.imgStoria}" alt="${libro.titolo}" 
+                             onerror="this.src='img/story-1.jpg'"/>
+                        <span class="fav-genre">${libro.genere}</span>
+                    </div>
+                    <div class="fav-body">
+                        <h3 class="fav-title">${libro.titolo}</h3>
+                        <p class="fav-author">di ${libro.autore || 'Autore sconosciuto'}</p>
+                        <p class="fav-desc">${libro.descrizione || 'Nessuna descrizione disponibile.'}</p>
+                        <a href="story.html?id=${libro.id}" class="btn-read-fav">Leggi →</a>
+                    </div>
+                </article>
+            `;
+            favGrid.innerHTML += favCard;
+        });
+    } catch (err) {
+        console.error('Errore nel caricamento dei preferiti:', err);
+        document.getElementById('favoritesGrid').innerHTML = '<p class="empty-state">Errore nel caricamento dei preferiti.</p>';
+    }
 }
 
 document.addEventListener('DOMContentLoaded', caricaUtente);

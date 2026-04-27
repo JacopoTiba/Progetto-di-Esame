@@ -171,5 +171,35 @@ def get_utente(id):
         "username": utente.get('username', ''),
         "storie": lista_storie
     }), 200
+
+@app.route('/api/utenti/email/<email>', methods=['GET'])
+def get_utente_by_email(email):
+    from bson import ObjectId
+    utente = credenziali.find_one({"email": email})
+    if not utente:
+        return jsonify({"message": "Utente non trovato"}), 404
+    
+    # Cerchiamo le storie dell'utente
+    storie_utente = list(storie.find({"idUtente": utente['_id']}))
+    lista_storie = []
+    for storia in storie_utente:
+        lista_storie.append({
+            "id": str(storia['_id']),
+            "titolo": storia.get('titolo', ''),
+            "descrizione": storia.get('descrizione', ''),
+            "genere": storia.get('genere', ''),
+            "imgStoria": storia.get('imgStoria', ''),
+            "capitoli": storia.get('capitoli', 0),
+            "nLike": storia.get('nLike', 0),
+        })
+    
+    return jsonify({
+        "id": str(utente['_id']),
+        "nome": utente.get('nome', ''),
+        "cognome": utente.get('cognome', ''),
+        "username": utente.get('username', ''),
+        "storie": lista_storie
+    }), 200
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
