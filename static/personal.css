@@ -727,3 +727,19 @@ img {
         height: 24px;
     }
 }
+
+/* =============================================
+   CARD THUMBNAIL IMAGES (placeholder cards)
+   ============================================= */
+.card-thumb-1 {
+    background-image: url('img/img4.jpg');
+    background-position: center 25%;
+}
+.card-thumb-2 {
+    background-image: url('img/img1.webp');
+    background-position: center 40%;
+}
+.card-thumb-3 {
+    background-image: url('img/img4.jpg');
+    background-position: 80% 30%;
+}

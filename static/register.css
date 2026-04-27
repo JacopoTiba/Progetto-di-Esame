@@ -447,3 +447,75 @@ body {
         border-radius: 16px;
     }
 }
+
+/* =============================================
+   EYE TOGGLE ICONS
+   ============================================= */
+.eye-off { display: none; }
+
+/* =============================================
+   MESSAGGIO BOX (feedback form)
+   ============================================= */
+#messaggio-box {
+    display: none;
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* =============================================
+   OTP MODAL
+   ============================================= */
+#otp-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+
+.otp-modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.otp-modal-title {
+    font-family: 'Playfair Display', serif;
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+.otp-modal-text {
+    font-family: 'Nunito', sans-serif;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+#otp-input {
+    width: 80%;
+    padding: 15px;
+    margin: 20px 0;
+    font-size: 24px;
+    letter-spacing: 10px;
+    text-align: center;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+}
+
+.otp-btn-full {
+    width: 100%;
+}
+
+#otp-error {
+    display: none;
+    color: red;
+    margin-top: 10px;
+}

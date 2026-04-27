@@ -504,3 +504,6 @@ body {
     margin-bottom: 1.5rem;
   }
 }
+
+/* Eye toggle icon — hidden by default */
+.eye-off { display: none; }

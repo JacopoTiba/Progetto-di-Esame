@@ -171,3 +171,5 @@ def get_utente(id):
         "username": utente.get('username', ''),
         "storie": lista_storie
     }), 200
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
