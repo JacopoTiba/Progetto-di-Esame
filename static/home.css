@@ -33,7 +33,7 @@ body {
     background: transparent;
     line-height: 1.6;
     min-height: 100vh;
-    padding-top: 64px;
+    padding-top: 0;
 }
 
 a {
@@ -555,10 +555,6 @@ img {
 
 /* Mobile */
 @media (max-width: 600px) {
-    body {
-        padding-top: 56px;
-    }
-
     .topnav {
         padding: 0 1.25rem;
         height: 56px;
