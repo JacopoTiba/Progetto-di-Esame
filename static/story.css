@@ -127,6 +127,7 @@ img { display: block; max-width: 100%; }
     color: var(--warm-brown);
 }
 .nav-btn.active { color: var(--gold); }
+.nav-btn.active svg { fill: var(--gold); }
 
 /* Tooltip */
 .nav-btn[data-tip]::after {
@@ -426,7 +427,11 @@ img { display: block; max-width: 100%; }
     color: var(--warm-brown);
     background: rgba(201,169,110,0.1);
 }
-.reaction-btn.active .reaction-count { color: var(--gold); }
+.reaction-btn.active .reaction-count { color: var(--warm-brown); }
+.reaction-btn.active svg { 
+    fill: #e74c3c; 
+    stroke: #e74c3c; 
+}
 
 .reactions-right {
     display: flex;

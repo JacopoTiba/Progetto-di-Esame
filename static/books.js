@@ -1,4 +1,4 @@
-let allBooks = [];
+﻿let allBooks = [];
 let currentQuery = "";
 let currentGenre = "All";
 
@@ -42,7 +42,7 @@ function renderBooks(list) {
           <p class="card-desc">${escapeHtml(storia.descrizione || "Nessuna descrizione disponibile.")}</p>
           <div class="card-meta">
             <span class="meta-item">${escapeHtml(storia.capitoli)} capitoli</span>
-            <span class="meta-item">♥ ${escapeHtml(storia.nLike)}</span>
+            <span class="meta-item">â™¥ ${escapeHtml(storia.nLike)}</span>
           </div>
           <div class="card-actions">
             <a href="story.html?id=${storia.id}" class="btn-read">Read</a>
@@ -126,3 +126,5 @@ document.addEventListener("DOMContentLoaded", () => {
   bindTags();
   loadBooks();
 });
+
+

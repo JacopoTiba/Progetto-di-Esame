@@ -1968,10 +1968,14 @@ img {
     transition: all 0.25s;
 }
 
-.btn-save:hover {
-    border-color: var(--gold-soft);
-    color: var(--warm-brown);
-    background: rgba(74, 55, 40, 0.06);
+.btn-save:hover, .btn-save.active {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(201, 169, 110, 0.1);
+}
+
+.btn-save.active svg {
+    fill: var(--gold);
 }
 
 @media (min-width: 601px) {

@@ -1,4 +1,4 @@
-let allStorie = [];
+﻿let allStorie = [];
 let currentFilter = "All";
 
 function getCurrentUser() {
@@ -42,7 +42,7 @@ function renderModalReviews(reviews) {
 
     reviews.forEach((review) => {
         const fullStars = Math.max(0, Math.min(5, Number(review.voto || 0)));
-        const stars = `${'★'.repeat(fullStars)}${'☆'.repeat(5 - fullStars)}`;
+        const stars = `${'â˜…'.repeat(fullStars)}${'â˜†'.repeat(5 - fullStars)}`;
 
         const card = `
             <div class="review-card">
@@ -101,7 +101,7 @@ function renderStories(storie) {
                     <p class="card-desc">${escapeHtml(storia.descrizione || 'Nessuna descrizione disponibile.')}</p>
                     <div class="card-meta">
                         <span class="meta-item">${escapeHtml(storia.capitoli)} capitoli</span>
-                        <span class="meta-item">? ${escapeHtml(storia.nLike)}</span>
+                        <span class="meta-item">♥ ${escapeHtml(storia.nLike)}</span>
                     </div>
                     <div class="card-actions">
                         <button class="btn-read" data-id="${storia.id}">Read</button>
@@ -145,6 +145,7 @@ function bindReadButtons() {
             document.querySelector('.btn-full-story').href = `story.html?id=${id}`;
 
             loadModalReviews(id);
+            bindModalSaveButton(id);
 
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -223,3 +224,63 @@ document.addEventListener('DOMContentLoaded', () => {
     bindModalClose();
     caricaStorie();
 });
+
+function bindModalSaveButton(storyId) {
+    const btnSave = document.querySelector('.btn-save');
+    if (!btnSave) return;
+
+    // Rimuove eventuali vecchi listener clonando il bottone
+    const newBtn = btnSave.cloneNode(true);
+    btnSave.parentNode.replaceChild(newBtn, btnSave);
+
+    const checkStatus = async () => {
+        const user = getCurrentUser();
+        if (!user?.email) return;
+        try {
+            const meRes = await fetch(`/api/utenti/email/${encodeURIComponent(user.email)}`);
+            if (!meRes.ok) return;
+            const me = await meRes.json();
+            const favRes = await fetch(`/api/utenti/${me.id}/preferiti`);
+            if (!favRes.ok) return;
+            const favData = await favRes.json();
+            const preferiti = favData.preferiti || [];
+            if (preferiti.some(s => s.id === storyId)) {
+                newBtn.classList.add('active');
+            } else {
+                newBtn.classList.remove('active');
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+    checkStatus();
+
+    newBtn.addEventListener('click', async () => {
+        const user = getCurrentUser();
+        if (!user?.email) {
+            alert('Devi essere loggato per salvare nei preferiti.');
+            return;
+        }
+        try {
+            const res = await fetch(`/api/storie/${storyId}/preferiti`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user.email })
+            });
+            if (!res.ok) throw new Error('Errore server');
+            const data = await res.json();
+            
+            if (data.isFavorite) {
+                newBtn.classList.add('active');
+                alert('Aggiunto ai preferiti!');
+            } else {
+                newBtn.classList.remove('active');
+                alert('Rimosso dai preferiti.');
+            }
+        } catch(e) {
+            alert('Errore durante il salvataggio.');
+        }
+    });
+}
+
+

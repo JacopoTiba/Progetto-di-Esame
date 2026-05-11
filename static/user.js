@@ -46,16 +46,21 @@ function renderFavorites(preferiti) {
 
     preferiti.forEach((libro) => {
         const card = `
-            <article class="favorite-card">
-                <div class="fav-thumb">
-                    <img src="${escapeHtml(libro.imgStoria || 'img/story-1.jpg')}" alt="${escapeHtml(libro.titolo)}" onerror="this.src='img/story-1.jpg'"/>
-                    <span class="fav-genre">${escapeHtml(libro.genere || 'Generale')}</span>
+            <article class="story-card">
+                <div class="card-thumb">
+                    <div class="card-thumb-img" style="background-image:url('${escapeHtml(libro.imgStoria || 'img/story-1.jpg')}');"></div>
+                    <span class="card-genre">${escapeHtml(libro.genere || 'Generale')}</span>
                 </div>
-                <div class="fav-body">
-                    <h3 class="fav-title">${escapeHtml(libro.titolo)}</h3>
-                    <p class="fav-author">di ${escapeHtml(libro.autore || 'Autore sconosciuto')}</p>
-                    <p class="fav-desc">${escapeHtml(libro.descrizione || 'Nessuna descrizione disponibile.')}</p>
-                    <a href="story.html?id=${libro.id}" class="btn-read-fav">Leggi ?</a>
+                <div class="card-body">
+                    <h3 class="card-title">${escapeHtml(libro.titolo)}</h3>
+                    <p class="card-author">di ${escapeHtml(libro.autore || 'Autore sconosciuto')}</p>
+                    <p class="card-desc">${escapeHtml(libro.descrizione || 'Nessuna descrizione disponibile.')}</p>
+                    <div class="card-footer">
+                        <a href="story.html?id=${libro.id}" class="btn-read">Leggi \u2192</a>
+                        <div class="card-stats">
+                            <span class="stat-pill">\u2665 ${escapeHtml(libro.nLike || 0)}</span>
+                        </div>
+                    </div>
                 </div>
             </article>
         `;
@@ -80,7 +85,7 @@ async function caricaUtente() {
         if (!res.ok) throw new Error('Utente non trovato');
 
         const utente = await res.json();
-        document.title = `Plotty – ${utente.username}`;
+        document.title = `Plotty \u2013 ${utente.username}`;
         document.querySelector('.profile-handle').textContent = `@${utente.username}`;
         document.querySelector('.profile-name').innerHTML = `${utente.nome} <em>${utente.cognome}</em>`;
 
@@ -110,9 +115,9 @@ async function caricaUtente() {
                             <p class="card-author">di ${escapeHtml(utente.username)}</p>
                             <p class="card-desc">${escapeHtml(storia.descrizione || 'Nessuna descrizione disponibile.')}</p>
                             <div class="card-footer">
-                                <a href="story.html?id=${storia.id}" class="btn-read">Leggi ?</a>
+                                <a href="story.html?id=${storia.id}" class="btn-read">Leggi \u2192</a>
                                 <div class="card-stats">
-                                    <span class="stat-pill">? ${escapeHtml(storia.nLike)}</span>
+                                    <span class="stat-pill">\u2665 ${escapeHtml(storia.nLike || 0)}</span>
                                 </div>
                             </div>
                         </div>
