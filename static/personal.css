@@ -119,6 +119,28 @@ img {
     gap: 1.5rem;
 }
 
+.btn-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-warm);
+    background: rgba(74, 55, 40, 0.06);
+    color: var(--warm-brown);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+}
+
+.btn-home:hover {
+    border-color: var(--gold-soft);
+    background: rgba(201, 169, 110, 0.14);
+    color: var(--warm-brown);
+}
+
 .search-form-right {
     display: flex;
     align-items: center;
@@ -684,6 +706,18 @@ img {
 
     .topnav-brand {
         font-size: 1rem;
+    }
+
+    .topnav-right {
+        gap: 0.55rem;
+    }
+
+    .btn-home {
+        padding: 0.45rem;
+    }
+
+    .btn-home span {
+        display: none;
     }
 
     .page {

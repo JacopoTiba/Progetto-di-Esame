@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Plotty - Modifica storia</title>
+<script src="auth-check.js"></script>
+<script>checkAuth();</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400;1,600&family=Lora:ital,wght@0,400;0,500;1,400&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="writeStory.css" />
+</head>
+
+<body>
+
+<!-- ====== TOAST ====== -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ====== NAV ====== -->
+<nav class="topnav">
+    <div class="topnav-left">
+        <a href="home.html" class="btn-back">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Indietro
+        </a>
+        <span class="nav-brand">Plotty</span>
+        <div class="nav-divider"></div>
+        <span class="nav-page-label">Modifica storia</span>
+    </div>
+
+    <div class="topnav-right">
+        <div class="autosave-indicator" id="autosaveIndicator">
+            <div class="autosave-dot" id="autosaveDot"></div>
+            <span id="autosaveText">Salvato</span>
+        </div>
+        <button class="nav-btn-pill outline" id="btnPreview">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            Anteprima
+        </button>
+        <button class="nav-btn-pill primary" id="btnPublishNav">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+            Salva
+        </button>
+        <a class="nav-btn-pill outline" href="personal.html" aria-label="Il mio profilo">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+            Profilo
+        </a>
+    </div>
+</nav>
+
+<!-- ====== LAYOUT ====== -->
+<div class="editor-layout">
+
+    <!-- ── EDITOR ── -->
+    <div class="editor-col">
+
+        <!-- Titolo -->
+        <div class="field-title-wrap">
+            <textarea
+                id="storyTitle"
+                class="input-story-title"
+                rows="1"
+                maxlength="120"
+                placeholder="Il titolo della tua storia…"
+                autocomplete="off"
+                spellcheck="true"
+            ></textarea>
+            <div class="title-underline"></div>
+        </div>
+
+        <!-- Sinossi -->
+        <div>
+            <p class="field-label">Sinossi <span class="required">*</span></p>
+            <textarea
+                id="storySummary"
+                class="input-summary"
+                rows="3"
+                maxlength="300"
+                placeholder="Una breve descrizione che incuriosisca il lettore…"
+                spellcheck="true"
+            ></textarea>
+            <p class="char-counter" id="summaryCounter">0 / 300</p>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="editor-toolbar" id="editorToolbar">
+            <button class="toolbar-btn" data-cmd="bold" data-tip="Grassetto (Ctrl+B)">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>
+                </svg>
+            </button>
+            <button class="toolbar-btn" data-cmd="italic" data-tip="Corsivo (Ctrl+I)">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/>
+                </svg>
+            </button>
+            <div class="toolbar-sep"></div>
+            <button class="toolbar-btn" data-tip="Separatore di scena" id="btnSceneBreak">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <line x1="5" y1="12" x2="19" y2="12"/>
+                    <circle cx="8" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="16" cy="12" r="1" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="toolbar-sep"></div>
+            <button class="toolbar-btn" data-tip="Annulla (Ctrl+Z)" id="btnUndo">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>
+                </svg>
+            </button>
+            <button class="toolbar-btn" data-tip="Ripristina (Ctrl+Y)" id="btnRedo">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 0 1 4-4h12"/>
+                </svg>
+            </button>
+            <div class="toolbar-sep"></div>
+            <button class="toolbar-btn" data-tip="Ingrandisci editor" id="btnFullEditor">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/>
+                    <line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/>
+                </svg>
+            </button>
+            <span class="toolbar-wordcount" id="toolbarWordCount">0 parole</span>
+        </div>
+
+        <!-- Corpo storia -->
+        <div class="story-editor-wrap">
+            <div class="story-editor-ghost" id="editorGhost">C'era una volta, in un luogo lontano lontano…
+
+Inizia la tua storia qui. Scrivi liberamente — puoi sempre modificare in seguito.
+
+Usa una riga vuota per separare i paragrafi.
+Digita [***] su una riga vuota per aggiungere un separatore di scena.</div>
+            <textarea
+                id="storyContent"
+                rows="20"
+                spellcheck="true"
+                aria-label="Corpo della storia"
+            ></textarea>
+        </div>
+
+        <p class="scene-hint">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            Separatore di scena: scrivi <code>[***]</code> su una riga vuota
+        </p>
+
+    </div>
+
+    <!-- ── SIDEBAR ── -->
+    <div class="sidebar-col">
+
+        <!-- Genere -->
+        <div class="sidebar-section">
+            <p class="sidebar-title">Genere</p>
+            <div class="genre-grid">
+                <button class="genre-chip" data-genre="Adventure">Adventure</button>
+                <button class="genre-chip" data-genre="Fantasy">Fantasy</button>
+                <button class="genre-chip" data-genre="Romance">Romance</button>
+                <button class="genre-chip" data-genre="Mystery">Mystery</button>
+                <button class="genre-chip" data-genre="Sci-Fi">Sci-Fi</button>
+                <button class="genre-chip" data-genre="Horror">Horror</button>
+                <button class="genre-chip" data-genre="Drama">Drama</button>
+                <button class="genre-chip" data-genre="Comedy">Comedy</button>
+            </div>
+        </div>
+
+        <!-- Tag -->
+        <div class="sidebar-section">
+            <p class="sidebar-title">Tag</p>
+            <div class="tags-wrap" id="tagsWrap">
+                <input type="text" class="tag-input" id="tagInput" placeholder="Aggiungi tag…" maxlength="30" />
+            </div>
+            <p class="tags-hint">Premi Invio o virgola per aggiungere · Max 8 tag</p>
+        </div>
+
+        <!-- Cover -->
+        <div class="sidebar-section">
+            <p class="sidebar-title">Copertina</p>
+            <div class="cover-upload-area" id="coverArea">
+                <img class="cover-preview" id="coverPreview" src="" alt="Anteprima copertina" />
+                <button class="cover-remove-btn" id="coverRemoveBtn" aria-label="Rimuovi copertina" type="button">
+                    <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+                <div class="cover-placeholder-icon" id="coverPlaceholder">
+                    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                </div>
+                <p class="cover-placeholder-text" id="coverPlaceholderText">Carica copertina</p>
+                <p class="cover-placeholder-sub" id="coverPlaceholderSub">JPG, PNG, WEBP · max 4 MB</p>
+                <input type="file" id="coverInput" accept="image/jpeg,image/png,image/webp" />
+            </div>
+        </div>
+
+        <!-- Stats live -->
+        <div class="sidebar-section">
+            <p class="sidebar-title">Statistiche</p>
+            <div class="live-stats">
+                <div class="stat-box">
+                    <p class="stat-box-value" id="statWords">0</p>
+                    <p class="stat-box-label">Parole</p>
+                </div>
+                <div class="stat-box">
+                    <p class="stat-box-value" id="statChars">0</p>
+                    <p class="stat-box-label">Caratteri</p>
+                </div>
+                <div class="stat-box">
+                    <p class="stat-box-value" id="statParagraphs">0</p>
+                    <p class="stat-box-label">Paragrafi</p>
+                </div>
+                <div class="stat-box">
+                    <p class="stat-box-value" id="statReadTime">0 min</p>
+                    <p class="stat-box-label">Lettura</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stato pubblicazione -->
+        <div class="sidebar-section">
+            <p class="sidebar-title">Stato</p>
+            <div class="status-toggle">
+                <button class="status-option active" data-status="draft">📝 Bozza</button>
+                <button class="status-option" data-status="published">🌿 Pubblica</button>
+            </div>
+        </div>
+
+        <!-- Pubblica -->
+        <div class="sidebar-section">
+            <button class="btn-publish-full" id="btnPublishMain" disabled>
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+                Salva modifiche
+            </button>
+        </div>
+
+    </div>
+</div>
+
+<!-- ====== MODAL ANTEPRIMA ====== -->
+<div class="preview-backdrop" id="previewBackdrop">
+    <div class="preview-modal">
+        <div class="preview-header">
+            <span class="preview-header-title">Anteprima storia</span>
+            <button class="preview-close" id="previewClose">
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="preview-body" id="previewBody">
+            <!-- Generato da JS -->
+        </div>
+    </div>
+</div>
+
+<!-- ====================================================
+     JAVASCRIPT
+     ====================================================
+     PER INTEGRARE CON IL DB:
+     Cerca la funzione `publishStory(payload)` e sostituisci
+     il blocco demo con la tua chiamata API:
+
+         const res = await fetch('/api/stories', {
+             method: 'POST',
+             headers: { 'Content-Type': 'application/json' },
+             body: JSON.stringify(payload)
+         });
+         return res.json(); // { id, slug, ... }
+
+     Il payload ha questa struttura:
+     {
+       title, summary, content, genre,
+       tags: [],
+       status: 'draft' | 'published',
+       coverBase64: '...' | null
+     }
+     ===================================================== -->
+<script>
+// ── ELEMENTI ───────────────────────────────────────────
+const titleEl      = document.getElementById('storyTitle');
+const summaryEl    = document.getElementById('storySummary');
+const contentEl    = document.getElementById('storyContent');
+const summaryCount = document.getElementById('summaryCounter');
+const editorGhost  = document.getElementById('editorGhost');
+const wordCountEl  = document.getElementById('toolbarWordCount');
+const statWords    = document.getElementById('statWords');
+const statChars    = document.getElementById('statChars');
+const statParas    = document.getElementById('statParagraphs');
+const statRead     = document.getElementById('statReadTime');
+const publishBtns  = [document.getElementById('btnPublishNav'), document.getElementById('btnPublishMain')];
+const autosaveEl   = document.getElementById('autosaveIndicator');
+const autosaveDot  = document.getElementById('autosaveDot');
+const autosaveText = document.getElementById('autosaveText');
+const storyId      = new URLSearchParams(window.location.search).get('id');
+
+// ── STATE ───────────────────────────────────────────────
+let selectedGenre = null;
+let tags          = [];
+let status        = 'draft';
+let coverBase64   = null;
+let existingCoverUrl = '';
+let autosaveTimer = null;
+let isDirty       = false;
+let isHydrating   = false;
+
+// ── UTILS ───────────────────────────────────────────────
+function countWords(txt) {
+    const t = txt.trim();
+    return t ? t.split(/\s+/).length : 0;
+}
+function readingTime(words) {
+    const m = Math.ceil(words / 200);
+    return m < 60 ? `${m} min` : `${Math.floor(m/60)}h ${m%60}min`;
+}
+function countParagraphs(txt) {
+    return txt.trim().split(/\n\n+/).filter(b => b.trim() && b.trim() !== '[***]').length;
+}
+
+// ── AUTORESIZE TEXTAREA ─────────────────────────────────
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+}
+[titleEl, summaryEl, contentEl].forEach(el => {
+    el.addEventListener('input', () => autoResize(el));
+});
+
+// ── TITLE: auto-update del titolo pagina ────────────────
+titleEl.addEventListener('input', () => {
+    document.title = titleEl.value.trim()
+        ? `Plotty – ${titleEl.value.trim()}`
+        : 'Plotty - Modifica storia';
+    checkPublishable();
+    scheduleSave();
+});
+
+// ── SUMMARY counter ─────────────────────────────────────
+summaryEl.addEventListener('input', () => {
+    const len = summaryEl.value.length;
+    summaryCount.textContent = `${len} / 300`;
+    summaryCount.className = 'char-counter' +
+        (len > 280 ? ' warn' : '') +
+        (len >= 300 ? ' error' : '');
+    checkPublishable();
+    scheduleSave();
+});
+
+// ── CONTENT: ghost placeholder + stats ─────────────────
+contentEl.addEventListener('input', () => {
+    editorGhost.style.display = contentEl.value ? 'none' : 'block';
+    updateStats();
+    checkPublishable();
+    scheduleSave();
+});
+
+function updateStats() {
+    const txt   = contentEl.value;
+    const words = countWords(txt);
+    statWords.textContent = words.toLocaleString('it');
+    statChars.textContent = txt.length.toLocaleString('it');
+    statParas.textContent = countParagraphs(txt);
+    statRead.textContent  = readingTime(words);
+    wordCountEl.textContent = `${words.toLocaleString('it')} parole`;
+}
+
+// ── GENRE SELECTOR ──────────────────────────────────────
+document.querySelectorAll('.genre-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        setGenre(chip.dataset.genre);
+        checkPublishable();
+        scheduleSave();
+    });
+});
+
+function setGenre(genre) {
+    selectedGenre = genre || null;
+    document.querySelectorAll('.genre-chip').forEach(c => {
+        c.classList.toggle('selected', c.dataset.genre === selectedGenre);
+    });
+}
+
+// ── TAGS ────────────────────────────────────────────────
+const tagsWrap = document.getElementById('tagsWrap');
+const tagInput = document.getElementById('tagInput');
+
+function addTag(val) {
+    const tag = val.trim().toLowerCase().replace(/[^a-z0-9àèéìòù\- ]/g, '');
+    if (!tag || tags.includes(tag) || tags.length >= 8) return;
+    tags.push(tag);
+    renderTags();
+    scheduleSave();
+}
+
+function renderTags() {
+    // rimuovi vecchie pill
+    tagsWrap.querySelectorAll('.tag-pill').forEach(p => p.remove());
+    tags.forEach((t, i) => {
+        const pill = document.createElement('span');
+        pill.className = 'tag-pill';
+        pill.innerHTML = `${t}<span class="tag-remove" data-i="${i}">✕</span>`;
+        tagsWrap.insertBefore(pill, tagInput);
+    });
+    tagInput.style.display = tags.length >= 8 ? 'none' : 'inline-block';
+}
+
+tagsWrap.addEventListener('click', e => {
+    if (e.target.classList.contains('tag-remove')) {
+        tags.splice(Number(e.target.dataset.i), 1);
+        renderTags();
+        scheduleSave();
+    } else {
+        tagInput.focus();
+    }
+});
+
+tagInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ',') {
+        e.preventDefault();
+        addTag(tagInput.value);
+        tagInput.value = '';
+    } else if (e.key === 'Backspace' && !tagInput.value && tags.length) {
+        tags.pop();
+        renderTags();
+    }
+});
+
+// ── COVER UPLOAD ────────────────────────────────────────
+const coverArea    = document.getElementById('coverArea');
+const coverInput   = document.getElementById('coverInput');
+const coverPreview = document.getElementById('coverPreview');
+const coverRemove  = document.getElementById('coverRemoveBtn');
+const coverPlaceholder    = document.getElementById('coverPlaceholder');
+const coverPlaceholderTxt = document.getElementById('coverPlaceholderText');
+const coverPlaceholderSub = document.getElementById('coverPlaceholderSub');
+
+coverArea.addEventListener('click', e => {
+    if (!e.target.closest('#coverRemoveBtn')) coverInput.click();
+});
+
+coverInput.addEventListener('change', () => {
+    const file = coverInput.files[0];
+    if (file) loadCover(file);
+});
+
+// Drag & drop
+coverArea.addEventListener('dragover', e => { e.preventDefault(); coverArea.classList.add('dragging'); });
+coverArea.addEventListener('dragleave', () => coverArea.classList.remove('dragging'));
+coverArea.addEventListener('drop', e => {
+    e.preventDefault();
+    coverArea.classList.remove('dragging');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadCover(file);
+});
+
+function loadCover(file) {
+    if (file.size > 4 * 1024 * 1024) { showToast('Immagine troppo grande (max 4 MB)', 'error'); return; }
+    const reader = new FileReader();
+    reader.onload = e => {
+        coverBase64 = e.target.result;
+        existingCoverUrl = '';
+        coverPreview.src = coverBase64;
+        coverPreview.classList.add('visible');
+        coverRemove.classList.add('visible');
+        [coverPlaceholder, coverPlaceholderTxt, coverPlaceholderSub].forEach(el => el.style.display = 'none');
+        scheduleSave();
+    };
+    reader.readAsDataURL(file);
+}
+
+coverRemove.addEventListener('click', e => {
+    e.stopPropagation();
+    coverBase64 = null;
+    existingCoverUrl = '';
+    coverPreview.src = '';
+    coverPreview.classList.remove('visible');
+    coverRemove.classList.remove('visible');
+    [coverPlaceholder, coverPlaceholderTxt, coverPlaceholderSub].forEach(el => el.style.display = '');
+    coverInput.value = '';
+    scheduleSave();
+});
+
+function showCover(url) {
+    if (!url) return;
+    existingCoverUrl = url;
+    coverPreview.src = url;
+    coverPreview.classList.add('visible');
+    coverRemove.classList.add('visible');
+    [coverPlaceholder, coverPlaceholderTxt, coverPlaceholderSub].forEach(el => el.style.display = 'none');
+}
+
+// ── STATUS TOGGLE ────────────────────────────────────────
+document.querySelectorAll('.status-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.status-option').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        status = btn.dataset.status;
+        publishBtns.forEach(b => {
+            b.querySelector('svg + *') && (b.innerHTML = b.innerHTML); // no-op refresh
+            b.textContent = status === 'published' ? '' : '';
+        });
+        // Aggiorna testo pulsanti
+        publishBtns.forEach(b => {
+            b.innerHTML = status === 'published'
+                ? `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Pubblica storia`
+                : `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v14a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salva bozza`;
+        });
+        scheduleSave();
+    });
+});
+
+// ── TOOLBAR ─────────────────────────────────────────────
+// Simuliamo bold/italic con markup minimo nel textarea
+// (in un progetto reale si userebbe un rich text editor)
+document.querySelectorAll('.toolbar-btn[data-cmd]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const cmd = btn.dataset.cmd;
+        const start = contentEl.selectionStart;
+        const end   = contentEl.selectionEnd;
+        const sel   = contentEl.value.substring(start, end);
+        const wrap  = cmd === 'bold' ? '**' : '_';
+        const newVal = contentEl.value.substring(0, start)
+                     + wrap + sel + wrap
+                     + contentEl.value.substring(end);
+        contentEl.value = newVal;
+        contentEl.focus();
+        contentEl.setSelectionRange(start + wrap.length, end + wrap.length);
+        updateStats();
+        scheduleSave();
+    });
+});
+
+document.getElementById('btnSceneBreak').addEventListener('click', () => {
+    const pos = contentEl.selectionStart;
+    const val = contentEl.value;
+    // Inserisce [***] su riga vuota
+    const insert = '\n\n[***]\n\n';
+    contentEl.value = val.substring(0, pos) + insert + val.substring(pos);
+    contentEl.focus();
+    contentEl.setSelectionRange(pos + insert.length, pos + insert.length);
+    editorGhost.style.display = 'none';
+    updateStats();
+    scheduleSave();
+});
+
+document.getElementById('btnUndo').addEventListener('click', () => { document.execCommand('undo'); });
+document.getElementById('btnRedo').addEventListener('click', () => { document.execCommand('redo'); });
+
+// Fullscreen editor
+let isFullEditor = false;
+document.getElementById('btnFullEditor').addEventListener('click', () => {
+    isFullEditor = !isFullEditor;
+    document.querySelector('.editor-layout').style.gridTemplateColumns = isFullEditor ? '1fr' : '1fr 320px';
+    document.querySelector('.sidebar-col').style.display = isFullEditor ? 'none' : '';
+});
+
+// ── PUBLISHABLE CHECK ───────────────────────────────────
+function checkPublishable() {
+    const ok = titleEl.value.trim().length > 0 && contentEl.value.trim().length > 20;
+    publishBtns.forEach(b => b.disabled = !ok);
+}
+
+// ── AUTOSAVE ────────────────────────────────────────────
+function scheduleSave() {
+    if (isHydrating) return;
+    isDirty = true;
+    clearTimeout(autosaveTimer);
+    autosaveDot.classList.add('saving');
+    autosaveText.textContent = 'Salvataggio…';
+    autosaveEl.classList.add('visible');
+    autosaveTimer = setTimeout(async () => {
+        await saveDraft();
+    }, 1500);
+}
+
+async function saveDraft() {
+    // ┌─────────────────────────────────────────────────┐
+    // │  Sostituisci con la tua chiamata API:           │
+    // │  await fetch('/api/drafts', { method:'PUT',     │
+    // │    body: JSON.stringify(buildPayload()) })       │
+    // └─────────────────────────────────────────────────┘
+    await new Promise(r => setTimeout(r, 400)); // simula latenza
+    autosaveDot.classList.remove('saving');
+    autosaveText.textContent = 'Salvato';
+    setTimeout(() => autosaveEl.classList.remove('visible'), 2000);
+    isDirty = false;
+}
+
+// ── BUILD PAYLOAD ────────────────────────────────────────
+function buildPayload() {
+    const usr = checkAuth();
+    return {
+        title:       titleEl.value.trim(),
+        summary:     summaryEl.value.trim(),
+        content:     contentEl.value.trim(),
+        genre:       selectedGenre,
+        tags:        [...tags],
+        status:      status,
+        coverBase64: coverBase64 || existingCoverUrl || null,
+        autore_email: usr ? usr.email : null
+    };
+}
+
+// ── PUBLISH ──────────────────────────────────────────────
+async function publishStory(payload) {
+    if (!storyId) {
+        throw new Error('ID storia mancante');
+    }
+
+    const res = await fetch(`/api/storie/${storyId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+        throw new Error('Aggiornamento non disponibile');
+    }
+    const data = await res.json();
+    return data;
+}
+
+publishBtns.forEach(btn => {
+    btn.addEventListener('click', async () => {
+        const payload = buildPayload();
+        if (!payload.title) { showToast('Aggiungi un titolo prima di salvare', 'error'); return; }
+        if (!payload.content || payload.content.length < 20) { showToast('La storia è troppo corta', 'error'); return; }
+
+        publishBtns.forEach(b => { b.disabled = true; b.textContent = 'Salvataggio...'; });
+
+        try {
+            const data = await publishStory(payload);
+            showToast('Modifiche salvate con successo!', 'success');
+            setTimeout(() => {
+                const idToOpen = data.id || storyId;
+                window.location.href = `story.html?id=${idToOpen}`;
+            }, 1200);
+        } catch (err) {
+            showToast('Impossibile salvare le modifiche con il server attuale.', 'error');
+            publishBtns.forEach(b => { b.disabled = false; });
+            checkPublishable();
+        }
+    });
+});
+
+async function loadStoryForEdit() {
+    if (!storyId) {
+        alert('ID storia mancante.');
+        window.location.href = 'personal.html';
+        return;
+    }
+
+    try {
+        isHydrating = true;
+        const res = await fetch(`/api/storie/${storyId}`);
+        if (!res.ok) throw new Error('Storia non trovata');
+
+        const story = await res.json();
+
+        titleEl.value = story.titolo || '';
+        summaryEl.value = story.descrizione || '';
+        contentEl.value = story.contenuto || '';
+        setGenre(story.genere || null);
+
+        if (Array.isArray(story.tags)) {
+            tags = story.tags;
+            renderTags();
+        }
+
+        if (story.imgStoria) {
+            showCover(story.imgStoria);
+        }
+
+        autoResize(titleEl);
+        autoResize(summaryEl);
+        autoResize(contentEl);
+        editorGhost.style.display = contentEl.value ? 'none' : 'block';
+        summaryCount.textContent = `${summaryEl.value.length} / 300`;
+        updateStats();
+        checkPublishable();
+
+        document.title = titleEl.value.trim()
+            ? `Plotty – Modifica: ${titleEl.value.trim()}`
+            : 'Plotty - Modifica storia';
+        isDirty = false;
+    } catch (err) {
+        console.error('Errore caricamento storia:', err);
+        alert('Impossibile caricare la storia da modificare.');
+        window.location.href = 'personal.html';
+    } finally {
+        isHydrating = false;
+    }
+}
+
+// ── ANTEPRIMA ────────────────────────────────────────────
+const previewBackdrop = document.getElementById('previewBackdrop');
+const previewBody     = document.getElementById('previewBody');
+
+function buildPreview() {
+    const title   = titleEl.value.trim() || 'Titolo non ancora inserito';
+    const summary = summaryEl.value.trim();
+    const genre   = selectedGenre || '';
+    const content = contentEl.value.trim();
+
+    const blocks = content.split(/\n\n+/);
+    let bodyHtml = '';
+    blocks.forEach(block => {
+        const t = block.trim();
+        if (!t) return;
+        if (t === '[***]') {
+            bodyHtml += `<p class="scene-break">✦ ✦ ✦</p>`;
+        } else {
+            bodyHtml += `<p>${t.replace(/\n/g, '<br>')}</p>`;
+        }
+    });
+
+    previewBody.innerHTML = `
+        ${coverBase64 ? `<img class="preview-cover visible" src="${coverBase64}" alt="Cover" />` : ''}
+        ${genre ? `<div class="preview-genre-badge">${genre}</div>` : ''}
+        <h1 class="preview-title">${title}</h1>
+        ${summary ? `<p class="preview-summary">${summary}</p>` : ''}
+        ${bodyHtml ? `
+            <div class="preview-divider">❧</div>
+            <div class="preview-content">${bodyHtml}</div>
+        ` : '<p class="preview-empty">Nessun contenuto ancora…</p>'}
+    `;
+}
+
+document.getElementById('btnPreview').addEventListener('click', () => {
+    buildPreview();
+    previewBackdrop.classList.add('open');
+});
+document.getElementById('previewClose').addEventListener('click', () => previewBackdrop.classList.remove('open'));
+previewBackdrop.addEventListener('click', e => {
+    if (e.target === previewBackdrop) previewBackdrop.classList.remove('open');
+});
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') previewBackdrop.classList.remove('open');
+});
+
+// ── TOAST ────────────────────────────────────────────────
+function showToast(msg, type = 'default') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = msg;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// ── WARN: uscita con dati non salvati ───────────────────
+window.addEventListener('beforeunload', e => {
+    if (isDirty) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
+// ── INIT ────────────────────────────────────────────────
+updateStats();
+checkPublishable();
+loadStoryForEdit();
+</script>
+</body>
+</html>

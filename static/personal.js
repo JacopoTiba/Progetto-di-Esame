@@ -31,6 +31,71 @@ function bindSearch() {
     });
 }
 
+async function deleteStory(storyId, userEmail) {
+    const res = await fetch(`/api/storie/${storyId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail }),
+    });
+
+    if (!res.ok) {
+        let message = 'Eliminazione non riuscita.';
+        try {
+            const data = await res.json();
+            if (data?.message) message = data.message;
+        } catch {
+            // Keep default error message when response body is not JSON.
+        }
+        throw new Error(message);
+    }
+}
+
+function bindDeleteStory(currentUser, utente) {
+    const grid = document.querySelector('.story-grid');
+    if (!grid) return;
+
+    grid.addEventListener('click', async (event) => {
+        const button = event.target.closest('.btn-delete');
+        if (!button) return;
+
+        const card = button.closest('.story-card');
+        const storyId = button.dataset.storyId;
+        if (!card || !storyId) return;
+
+        const ok = window.confirm('Sei sicuro di voler eliminare questa storia?');
+        if (!ok) return;
+
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Eliminazione...';
+
+        try {
+            await deleteStory(storyId, currentUser.email);
+
+            card.remove();
+            utente.storie = utente.storie.filter((s) => s.id !== storyId);
+
+            const profileStats = document.querySelectorAll('.profile-stats .stat-num');
+            if (profileStats.length >= 1) {
+                profileStats[0].textContent = utente.storie.length;
+            }
+
+            const sectionCount = document.querySelector('.section-count');
+            if (sectionCount) {
+                sectionCount.textContent = `${utente.storie.length} racconti`;
+            }
+
+            if (!utente.storie.length) {
+                grid.innerHTML = '<p>Nessuna storia pubblicata. <a href="writeStory.html">Scrivi la tua prima storia!</a></p>';
+            }
+        } catch (err) {
+            alert(err.message || 'Errore durante l\'eliminazione della storia.');
+            button.disabled = false;
+            button.textContent = originalText;
+        }
+    });
+}
+
 function renderFavorites(preferiti) {
     const favGrid = document.getElementById('favoritesGrid');
     const favCount = document.getElementById('favCount');
@@ -75,7 +140,7 @@ async function caricaProfiloPersonale() {
         if (!res.ok) throw new Error('Profilo non trovato');
 
         const utente = await res.json();
-        document.title = 'Plotty – Il Mio Profilo';
+        document.title = 'Plotty ï¿½ Il Mio Profilo';
         document.querySelector('.profile-handle').textContent = `@${utente.username}`;
         document.querySelector('.profile-name').innerHTML = `${utente.nome} <em>${utente.cognome}</em>`;
 
@@ -108,7 +173,8 @@ async function caricaProfiloPersonale() {
                             <div class="card-footer">
                                 <a href="story.html?id=${storia.id}" class="btn-read">Leggi ?</a>
                                 <div class="card-actions-personal">
-                                    <a href="writeStory.html?id=${storia.id}" class="btn-edit">Modifica</a>
+                                    <a href="editStory.html?id=${storia.id}" class="btn-edit">Modifica</a>
+                                    <button class="btn-delete" data-story-id="${storia.id}" type="button">Elimina</button>
                                 </div>
                             </div>
                         </div>
@@ -116,6 +182,8 @@ async function caricaProfiloPersonale() {
                 `;
                 grid.insertAdjacentHTML('beforeend', card);
             });
+
+            bindDeleteStory(currentUser, utente);
         }
 
         const resFav = await fetch(`/api/utenti/${utente.id}/preferiti`);
