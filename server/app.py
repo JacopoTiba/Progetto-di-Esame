@@ -6,6 +6,7 @@ from bson.errors import InvalidId
 from dotenv import load_dotenv
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
+from flask_bcrypt import Bcrypt
 import cloudinary
 import cloudinary.uploader
 
@@ -22,6 +23,7 @@ cloudinary.config(
 
 app = Flask(__name__, static_folder="../static", static_url_path="")
 CORS(app)
+bcrypt = Bcrypt(app)
 
 
 def _to_object_id(value):
@@ -44,7 +46,10 @@ def _safe_user(utente):
 
 
 def _serialize_story(storia):
-    autore = credenziali.find_one({"_id": storia.get("idUtente")})
+    id_utente = storia.get("idUtente")
+    if isinstance(id_utente, str):
+        id_utente = _to_object_id(id_utente)
+    autore = credenziali.find_one({"_id": id_utente}) if id_utente else None
     liked_by = storia.get("likedBy", [])
     return {
         "id": str(storia.get("_id")),
@@ -93,12 +98,14 @@ def registrazione():
 
     codice_verifica = genera_codice()
 
+    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
     nuovo_utente = {
         "nome": nome,
         "cognome": cognome,
         "username": username,
         "email": email,
-        "password": password,
+        "password": hashed_password,
         "indirizzo": indirizzo,
         "codice_verifica": codice_verifica,
         "verificato": False,
@@ -131,9 +138,12 @@ def verifica_codice():
 @app.route("/api/login", methods=["POST"])
 def login():
     data = request.json or {}
-    utente = credenziali.find_one({"email": data.get("email"), "password": data.get("password")})
+    email = data.get("email")
+    password = data.get("password")
 
-    if not utente:
+    utente = credenziali.find_one({"email": email})
+
+    if not utente or not bcrypt.check_password_hash(utente.get("password", ""), password):
         return jsonify({"message": "Credenziali errate"}), 401
 
     if not utente.get("verificato"):
@@ -171,7 +181,7 @@ def get_utente(id):
     if not utente:
         return jsonify({"message": "Utente non trovato"}), 404
 
-    storie_utente = list(storie.find({"idUtente": oid}))
+    storie_utente = list(storie.find({"idUtente": oid}).sort("_id", -1))
     lista_storie = [_serialize_story(s) for s in storie_utente]
 
     response = _safe_user(utente)
@@ -185,7 +195,7 @@ def get_utente_by_email(email):
     if not utente:
         return jsonify({"message": "Utente non trovato"}), 404
 
-    storie_utente = list(storie.find({"idUtente": utente["_id"]}))
+    storie_utente = list(storie.find({"idUtente": utente["_id"]}).sort("_id", -1))
     lista_storie = [_serialize_story(s) for s in storie_utente]
 
     response = _safe_user(utente)
@@ -299,7 +309,7 @@ def get_storie():
     genre = (request.args.get("genre") or "").strip().lower()
     limit = request.args.get("limit", type=int)
 
-    docs = list(storie.find())
+    docs = list(storie.find().sort("_id", -1))
     serialized = [_serialize_story(doc) for doc in docs]
 
     if query:
@@ -332,17 +342,13 @@ def get_storia(id):
     payload = _serialize_story(storia)
     payload["contenuto"] = storia.get("contenuto", "")
 
-    avg_result = list(recensioni.aggregate([
-        {"$match": {"storiaId": oid}},
-        {"$group": {"_id": "$storiaId", "avg": {"$avg": "$voto"}, "count": {"$sum": 1}}},
-    ]))
-
-    if avg_result:
-        payload["ratingMedio"] = round(avg_result[0]["avg"], 1)
-        payload["numRecensioni"] = avg_result[0]["count"]
+    email = request.args.get("email")
+    if email:
+        user = _get_current_user_from_email(email)
+        if user:
+            payload["isLiked"] = user["_id"] in storia.get("likedBy", [])
     else:
-        payload["ratingMedio"] = None
-        payload["numRecensioni"] = 0
+        payload["isLiked"] = False
 
     return jsonify(payload), 200
 
@@ -421,7 +427,6 @@ def get_recensioni(id):
         payload.append({
             "id": str(doc.get("_id")),
             "username": doc.get("username", "Utente"),
-            "voto": doc.get("voto", 0),
             "testo": doc.get("testo", ""),
             "createdAt": doc.get("createdAt").isoformat() if doc.get("createdAt") else None,
         })
@@ -444,23 +449,19 @@ def add_recensione(id):
         return jsonify({"message": "Utente corrente non autenticato"}), 401
 
     testo = (data.get("testo") or "").strip()
-    voto = int(data.get("voto") or 0)
     if not testo:
-        return jsonify({"message": "Testo recensione obbligatorio"}), 400
-    if voto < 1 or voto > 5:
-        return jsonify({"message": "Voto non valido (1-5)"}), 400
+        return jsonify({"message": "Testo commento obbligatorio"}), 400
 
-    recensione = {
+    commento = {
         "storiaId": story_oid,
         "userId": current_user["_id"],
         "username": current_user.get("username", "Utente"),
-        "voto": voto,
         "testo": testo,
         "createdAt": datetime.utcnow(),
     }
 
-    res = recensioni.insert_one(recensione)
-    return jsonify({"message": "Recensione aggiunta", "id": str(res.inserted_id)}), 201
+    res = recensioni.insert_one(commento)
+    return jsonify({"message": "Commento aggiunto", "id": str(res.inserted_id)}), 201
 
 
 if __name__ == "__main__":

@@ -46,7 +46,7 @@ function renderFavorites(preferiti) {
 
     preferiti.forEach((libro) => {
         const card = `
-            <article class="story-card">
+            <article class="story-card" onclick="window.location.href='story.html?id=${libro.id}'">
                 <div class="card-thumb">
                     <div class="card-thumb-img" style="background-image:url('${escapeHtml(libro.imgStoria || 'img/story-1.jpg')}');"></div>
                     <span class="card-genre">${escapeHtml(libro.genere || 'Generale')}</span>
@@ -56,7 +56,7 @@ function renderFavorites(preferiti) {
                     <p class="card-author">di ${escapeHtml(libro.autore || 'Autore sconosciuto')}</p>
                     <p class="card-desc">${escapeHtml(libro.descrizione || 'Nessuna descrizione disponibile.')}</p>
                     <div class="card-footer">
-                        <a href="story.html?id=${libro.id}" class="btn-read">Leggi \u2192</a>
+                        <a href="story.html?id=${libro.id}" class="btn-read" onclick="event.stopPropagation()">Leggi \u2192</a>
                     </div>
                 </div>
             </article>
@@ -98,7 +98,7 @@ async function caricaProfiloPersonale() {
         } else {
             utente.storie.forEach((storia) => {
                 const card = `
-                    <article class="story-card">
+                    <article class="story-card" onclick="window.location.href='story.html?id=${storia.id}'">
                         <div class="card-thumb">
                             <div class="card-thumb-img" style="background-image:url('${escapeHtml(storia.imgStoria || 'img/story-1.jpg')}');"></div>
                             <span class="card-genre">${escapeHtml(storia.genere || 'Generale')}</span>
@@ -108,9 +108,9 @@ async function caricaProfiloPersonale() {
                             <p class="card-author">di ${escapeHtml(utente.username)}</p>
                             <p class="card-desc">${escapeHtml(storia.descrizione || 'Nessuna descrizione disponibile.')}</p>
                             <div class="card-footer">
-                                <a href="story.html?id=${storia.id}" class="btn-read">Leggi \u2192</a>
+                                <a href="story.html?id=${storia.id}" class="btn-read" onclick="event.stopPropagation()">Leggi \u2192</a>
                                 <div class="card-actions-personal">
-                                    <a href="writeStory.html?id=${storia.id}" class="btn-edit">Modifica</a>
+                                    <a href="writeStory.html?id=${storia.id}" class="btn-edit" onclick="event.stopPropagation()">Modifica</a>
                                 </div>
                             </div>
                         </div>
