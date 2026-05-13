@@ -1,5 +1,8 @@
-﻿let allStorie = [];
 let currentFilter = "All";
+let currentSkip = 0;
+const PAGE_LIMIT = 6;
+let hasMoreStorie = true;
+let isFetching = false;
 
 function getCurrentUser() {
     const match = document.cookie
@@ -72,13 +75,15 @@ async function loadModalReviews(storyId) {
     }
 }
 
-function renderStories(storie) {
+function renderStories(storie, append = false) {
     const grid = document.querySelector('.story-grid');
     if (!grid) return;
 
-    grid.innerHTML = '';
+    if (!append) {
+        grid.innerHTML = '';
+    }
 
-    if (!storie.length) {
+    if (!storie.length && !append) {
         grid.innerHTML = '<p>Nessuna storia trovata.</p>';
         return;
     }
@@ -154,27 +159,51 @@ function bindReadButtons() {
 }
 
 function applyFilters() {
-    let filtered = allStorie;
-
-    if (currentFilter !== 'All') {
-        filtered = filtered.filter((s) => (s.genere || '').toLowerCase() === currentFilter.toLowerCase());
-    }
-
-    const toShow = currentFilter === 'All' ? filtered.slice(0, 6) : filtered;
-    renderStories(toShow);
+    currentSkip = 0;
+    hasMoreStorie = true;
+    caricaStorie(true);
 }
 
-async function caricaStorie() {
+async function caricaStorie(reset = false) {
+    if (isFetching || (!hasMoreStorie && !reset)) return;
+    isFetching = true;
+
+    if (reset) {
+        currentSkip = 0;
+        hasMoreStorie = true;
+    }
+
     try {
-        const res = await fetch('/api/storie');
+        const url = `/api/storie?genre=${encodeURIComponent(currentFilter)}&limit=${PAGE_LIMIT}&skip=${currentSkip}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error('Errore API storie');
         const data = await res.json();
-        allStorie = data.storie || [];
-        applyFilters();
+        
+        const nuoveStorie = data.storie || [];
+        hasMoreStorie = data.hasMore;
+        currentSkip += nuoveStorie.length;
+
+        renderStories(nuoveStorie, !reset);
     } catch (err) {
         console.error('Errore nel caricamento delle storie:', err);
-        renderStories([]);
+        if (reset) renderStories([], false);
+    } finally {
+        isFetching = false;
     }
+}
+
+function bindInfiniteScroll() {
+    window.addEventListener('scroll', () => {
+        if (isFetching || !hasMoreStorie) return;
+        
+        const scrollHeight = document.documentElement.scrollHeight;
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const clientHeight = document.documentElement.clientHeight;
+
+        if (scrollTop + clientHeight >= scrollHeight - 200) {
+            caricaStorie();
+        }
+    });
 }
 
 function bindGenreFilters() {
@@ -222,7 +251,8 @@ document.addEventListener('DOMContentLoaded', () => {
     bindSearchToBooksPage();
     bindGenreFilters();
     bindModalClose();
-    caricaStorie();
+    bindInfiniteScroll();
+    caricaStorie(true);
 });
 
 function bindModalSaveButton(storyId) {

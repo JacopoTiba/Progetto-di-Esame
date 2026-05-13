@@ -307,7 +307,8 @@ def crea_storia():
 def get_storie():
     query = (request.args.get("query") or "").strip().lower()
     genre = (request.args.get("genre") or "").strip().lower()
-    limit = request.args.get("limit", type=int)
+    limit = request.args.get("limit", default=None, type=int)
+    skip = request.args.get("skip", default=0, type=int)
 
     docs = list(storie.find().sort("_id", -1))
     serialized = [_serialize_story(doc) for doc in docs]
@@ -323,10 +324,19 @@ def get_storie():
     if genre and genre != "all":
         serialized = [s for s in serialized if s.get("genere", "").lower() == genre]
 
-    if limit and limit > 0:
-        serialized = serialized[:limit]
+    # Applichiamo paginazione sulla lista filtrata
+    total_found = len(serialized)
+    
+    start = skip
+    end = (skip + limit) if limit else total_found
+    
+    paginated = serialized[start:end]
 
-    return jsonify({"storie": serialized}), 200
+    return jsonify({
+        "storie": paginated,
+        "total": total_found,
+        "hasMore": end < total_found
+    }), 200
 
 
 @app.route("/api/storie/<id>", methods=["GET"])
@@ -465,4 +475,7 @@ def add_recensione(id):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    # Prende la porta dal file .env, altrimenti usa la 3000
+    port = int(os.getenv("PORT", 3000))
+    print(f"--- Avvio server in HTTPS su https://127.0.0.1:{port} ---")
+    app.run(debug=True, host="0.0.0.0", port=port, ssl_context='adhoc')
