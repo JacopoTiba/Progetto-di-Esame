@@ -102,14 +102,7 @@
         <span id="metaReadTime">–</span>
     </div>
 
-    <div class="meta-divider"></div>
 
-    <div class="meta-chip">
-        <div class="rating-stars" id="metaStars">
-            <!-- iniettato da JS -->
-        </div>
-        <span class="rating-value" id="metaRating">–</span>
-    </div>
 
     <div class="meta-divider"></div>
 
@@ -186,26 +179,15 @@
 </div>
 
 <section class="reviews-section" id="reviewsSection">
-    <h2 class="reviews-title">Recensioni</h2>
+    <h2 class="reviews-title">Commenti</h2>
 
     <form id="reviewForm" class="review-form">
-        <div class="review-form-row">
-            <label for="reviewRating">Voto</label>
-            <select id="reviewRating" required>
-                <option value="">Seleziona</option>
-                <option value="5">5 - Eccellente</option>
-                <option value="4">4 - Ottimo</option>
-                <option value="3">3 - Buono</option>
-                <option value="2">2 - Discreto</option>
-                <option value="1">1 - Scarso</option>
-            </select>
-        </div>
         <textarea id="reviewText" rows="4" placeholder="Scrivi la tua recensione..." required></textarea>
-        <button type="submit" class="share-btn">Pubblica recensione</button>
+        <button type="submit" class="share-btn">Invia commento</button>
     </form>
 
     <div id="reviewsList" class="reviews-list">
-        <p class="reviews-empty">Caricamento recensioni...</p>
+        <p class="reviews-empty">Caricamento commenti...</p>
     </div>
 </section>
 

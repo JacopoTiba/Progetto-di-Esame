@@ -245,7 +245,7 @@ img {
 .main-content {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0.5rem 2.5rem 4rem;
+    padding: 1.5rem 2.5rem 2rem; /* Più compatto: ridotto il fondo da 4rem a 2rem */
 }
 
 /* ---------- Section Header ---------- */
@@ -461,8 +461,8 @@ img {
 /* ---------- Quote Section ---------- */
 .quote-section {
     text-align: center;
-    padding: 4rem 2rem;
-    margin-top: 3rem;
+    padding: 2.5rem 2rem;
+    margin-top: 2rem;
     border-top: 1.5px solid var(--border-warm);
 }
 
@@ -485,10 +485,18 @@ img {
 
 /* ---------- Footer ---------- */
 .site-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
     text-align: center;
-    padding: 2rem;
-    background: var(--warm-brown);
+    padding: 1.25rem 2rem;
+    background: rgba(74, 55, 40, 0.95);
+    backdrop-filter: blur(10px);
     color: rgba(250, 244, 235, 0.7);
+    border-top: 1.5px solid var(--gold-soft);
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .footer-brand {
@@ -506,9 +514,9 @@ img {
 /* ---------- FAB (Floating Action Button) ---------- */
 .fab {
     position: fixed;
-    bottom: 2rem;
+    bottom: 6rem;
     right: 2rem;
-    z-index: 100;
+    z-index: 110;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -615,7 +623,7 @@ img {
     }
 
     .fab {
-        bottom: 1.25rem;
+        bottom: 5.5rem;
         right: 1.25rem;
         width: 52px;
         height: 52px;
@@ -624,6 +632,10 @@ img {
     .fab svg {
         width: 24px;
         height: 24px;
+    }
+
+    .site-footer {
+        padding: 0.8rem 1.25rem;
     }
 }
 
