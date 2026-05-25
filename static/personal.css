@@ -569,6 +569,23 @@ img {
     margin-bottom: 0.5rem;
 }
 
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.tag-pill {
+    background: rgba(201, 169, 110, 0.15);
+    color: var(--gold);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(201, 169, 110, 0.3);
+}
+
 .card-footer {
     display: flex;
     align-items: center;
@@ -852,6 +869,24 @@ img {
 .btn-delete:hover {
     background: #fde8e8;
     border-color: #d97d7d;
+}
+
+/* Badge "Bozza" sulle card bozza nel profilo personale */
+.card-draft-badge {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    z-index: 3;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: rgba(201, 169, 110, 0.92);
+    color: #fff;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(201, 169, 110, 0.5);
 }
 
 /* ==================== RESPONSIVE ==================== */

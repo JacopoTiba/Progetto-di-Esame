@@ -552,7 +552,7 @@ document.getElementById('btnFullEditor').addEventListener('click', () => {
 
 // ── PUBLISHABLE CHECK ───────────────────────────────────
 function checkPublishable() {
-    const ok = titleEl.value.trim().length > 0 && contentEl.value.trim().length > 20;
+    const ok = titleEl.value.trim().length > 0 && contentEl.value.trim().length > 0;
     publishBtns.forEach(b => b.disabled = !ok);
 }
 
@@ -572,7 +572,7 @@ async function saveDraft() {
     // ┌─────────────────────────────────────────────────┐
     // │  Sostituisci con la tua chiamata API:           │
     // │  await fetch('/api/drafts', { method:'PUT',     │
-    // │    body: JSON.stringify(buildPayload()) })       │
+    // │    body: JSON.stringify(buildPayload()) })      │
     // └─────────────────────────────────────────────────┘
     await new Promise(r => setTimeout(r, 400)); // simula latenza
     autosaveDot.classList.remove('saving');

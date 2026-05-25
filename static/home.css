@@ -384,6 +384,23 @@ img {
     margin-top: 0.25rem;
 }
 
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+}
+
+.tag-pill {
+    background: rgba(201, 169, 110, 0.15);
+    color: var(--gold);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(201, 169, 110, 0.3);
+}
+
 .card-meta {
     display: flex;
     gap: 1rem;

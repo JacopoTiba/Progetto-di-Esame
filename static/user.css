@@ -547,6 +547,23 @@ img {
     margin-bottom: 0.5rem;
 }
 
+.card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.tag-pill {
+    background: rgba(201, 169, 110, 0.15);
+    color: var(--gold);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(201, 169, 110, 0.3);
+}
+
 .card-footer {
     display: flex;
     align-items: center;

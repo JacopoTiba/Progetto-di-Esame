@@ -50,8 +50,7 @@ async function deleteStory(storyId, userEmail) {
     }
 }
 
-function bindDeleteStory(currentUser, utente) {
-    const grid = document.querySelector('.story-grid');
+function bindDeleteStory(currentUser, storieArray, grid) {
     if (!grid) return;
 
     grid.addEventListener('click', async (event) => {
@@ -71,23 +70,7 @@ function bindDeleteStory(currentUser, utente) {
 
         try {
             await deleteStory(storyId, currentUser.email);
-
             card.remove();
-            utente.storie = utente.storie.filter((s) => s.id !== storyId);
-
-            const profileStats = document.querySelectorAll('.profile-stats .stat-num');
-            if (profileStats.length >= 1) {
-                profileStats[0].textContent = utente.storie.length;
-            }
-
-            const sectionCount = document.querySelector('.section-count');
-            if (sectionCount) {
-                sectionCount.textContent = `${utente.storie.length} racconti`;
-            }
-
-            if (!utente.storie.length) {
-                grid.innerHTML = '<p>Nessuna storia pubblicata. <a href="writeStory.html">Scrivi la tua prima storia!</a></p>';
-            }
         } catch (err) {
             alert(err.message || 'Errore durante l\'eliminazione della storia.');
             button.disabled = false;
@@ -130,6 +113,38 @@ function renderFavorites(preferiti) {
     });
 }
 
+function renderStoryCard(storia, username, isDraft = false) {
+    const draftBadge = isDraft
+        ? `<span class="card-draft-badge">📝 Bozza</span>`
+        : '';
+        
+    const tagsHtml = Array.isArray(storia.tags) && storia.tags.length > 0
+        ? `<div class="card-tags">${storia.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>`
+        : '';
+
+    return `
+        <article class="story-card" onclick="window.location.href='story.html?id=${storia.id}'">
+            <div class="card-thumb">
+                <div class="card-thumb-img" style="background-image:url('${escapeHtml(storia.imgStoria || 'img/story-1.jpg')}');"></div>
+                <span class="card-genre">${escapeHtml(storia.genere || 'Generale')}</span>
+                ${draftBadge}
+            </div>
+            <div class="card-body">
+                <h3 class="card-title">${escapeHtml(storia.titolo)}</h3>
+                <p class="card-author">di ${escapeHtml(username)}</p>
+                <p class="card-desc">${escapeHtml(storia.descrizione || 'Nessuna descrizione disponibile.')}</p>
+                ${tagsHtml}
+                <div class="card-footer">
+                    <a href="editStory.html?id=${storia.id}" class="btn-read" onclick="event.stopPropagation()">Modifica →</a>
+                    <div class="card-actions-personal">
+                        <button class="btn-delete" data-story-id="${storia.id}" onclick="event.stopPropagation()">Elimina</button>
+                    </div>
+                </div>
+            </div>
+        </article>
+    `;
+}
+
 async function caricaProfiloPersonale() {
     const currentUser = getCurrentUser();
     if (!currentUser?.email) {
@@ -142,51 +157,58 @@ async function caricaProfiloPersonale() {
         if (!res.ok) throw new Error('Profilo non trovato');
 
         const utente = await res.json();
-        document.title = 'Plotty \u2013 Il Mio Profilo';
+        document.title = 'Plotty – Il Mio Profilo';
         document.querySelector('.profile-handle').textContent = `@${utente.username}`;
         document.querySelector('.profile-name').innerHTML = `${utente.nome} <em>${utente.cognome}</em>`;
 
+        // Carica TUTTE le storie (incluse le bozze) tramite la rotta privata
+        const resAll = await fetch(`/api/storie/mie?email=${encodeURIComponent(currentUser.email)}`);
+        const allStorieData = resAll.ok ? await resAll.json() : { storie: [] };
+        const tutteLeStorie = allStorieData.storie || [];
+
+        const storiePublicate = tutteLeStorie.filter(s => s.status === 'published');
+        const bozze = tutteLeStorie.filter(s => s.status === 'draft');
+
+        // Aggiorna le stat nel profilo
         const stats = document.querySelectorAll('.profile-stats .stat-num');
         if (stats.length >= 3) {
-            stats[0].textContent = utente.storie.length;
+            stats[0].textContent = storiePublicate.length;
             stats[1].textContent = utente.followersCount || 0;
             stats[2].textContent = utente.followingCount || 0;
         }
 
-        document.querySelector('.section-count').textContent = `${utente.storie.length} racconti`;
+        document.querySelector('.section-count').textContent = `${storiePublicate.length} racconti`;
 
+        // ── Storie pubblicate ──
         const grid = document.querySelector('.story-grid');
         grid.innerHTML = '';
-
-        if (!utente.storie.length) {
+        if (!storiePublicate.length) {
             grid.innerHTML = '<p>Nessuna storia pubblicata. <a href="writeStory.html">Scrivi la tua prima storia!</a></p>';
         } else {
-            utente.storie.forEach((storia) => {
-                const card = `
-                    <article class="story-card" onclick="window.location.href='story.html?id=${storia.id}'">
-                        <div class="card-thumb">
-                            <div class="card-thumb-img" style="background-image:url('${escapeHtml(storia.imgStoria || 'img/story-1.jpg')}');"></div>
-                            <span class="card-genre">${escapeHtml(storia.genere || 'Generale')}</span>
-                        </div>
-                        <div class="card-body">
-                            <h3 class="card-title">${escapeHtml(storia.titolo)}</h3>
-                            <p class="card-author">di ${escapeHtml(utente.username)}</p>
-                            <p class="card-desc">${escapeHtml(storia.descrizione || 'Nessuna descrizione disponibile.')}</p>
-                            <div class="card-footer">
-                                <a href="story.html?id=${storia.id}" class="btn-read" onclick="event.stopPropagation()">Leggi \u2192</a>
-                                <div class="card-actions-personal">
-                                    <a href="writeStory.html?id=${storia.id}" class="btn-edit" onclick="event.stopPropagation()">Modifica</a>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                `;
-                grid.insertAdjacentHTML('beforeend', card);
+            storiePublicate.forEach(storia => {
+                grid.insertAdjacentHTML('beforeend', renderStoryCard(storia, utente.username, false));
             });
-
-            bindDeleteStory(currentUser, utente);
+            bindDeleteStory(currentUser, tutteLeStorie, grid);
         }
 
+        // ── Bozze ──
+        const draftsSection = document.getElementById('draftsSection');
+        const draftsGrid = document.getElementById('draftsGrid');
+        const draftsCount = document.getElementById('draftsCount');
+
+        if (bozze.length > 0) {
+            draftsSection.style.display = '';
+            draftsCount.textContent = `${bozze.length} bozz${bozze.length === 1 ? 'a' : 'e'}`;
+            draftsGrid.innerHTML = '';
+            bozze.forEach(storia => {
+                draftsGrid.insertAdjacentHTML('beforeend', renderStoryCard(storia, utente.username, true));
+            });
+            bindDeleteStory(currentUser, tutteLeStorie, draftsGrid);
+        } else {
+            draftsSection.style.display = 'none';
+        }
+
+        // ── Preferiti ──
         const resFav = await fetch(`/api/utenti/${utente.id}/preferiti`);
         if (resFav.ok) {
             const dataFav = await resFav.json();

@@ -571,7 +571,7 @@ document.getElementById('btnFullEditor').addEventListener('click', () => {
 
 // ── PUBLISHABLE CHECK ───────────────────────────────────
 function checkPublishable() {
-    const ok = titleEl.value.trim().length > 0 && contentEl.value.trim().length > 20;
+    const ok = titleEl.value.trim().length > 0 && contentEl.value.trim().length > 0;
     publishBtns.forEach(b => b.disabled = !ok);
 }
 
@@ -592,7 +592,7 @@ async function saveDraft() {
     // ┌─────────────────────────────────────────────────┐
     // │  Sostituisci con la tua chiamata API:           │
     // │  await fetch('/api/drafts', { method:'PUT',     │
-    // │    body: JSON.stringify(buildPayload()) })       │
+    // │    body: JSON.stringify(buildPayload()) })      │
     // └─────────────────────────────────────────────────┘
     await new Promise(r => setTimeout(r, 400)); // simula latenza
     autosaveDot.classList.remove('saving');
@@ -680,6 +680,18 @@ async function loadStoryForEdit() {
             tags = story.tags;
             renderTags();
         }
+
+        // ── Ripristina lo stato (bozza / pubblicata) ────────────────────
+        const savedStatus = story.status || 'draft';
+        status = savedStatus;
+        document.querySelectorAll('.status-option').forEach(b => {
+            b.classList.toggle('active', b.dataset.status === savedStatus);
+        });
+        publishBtns.forEach(b => {
+            b.innerHTML = savedStatus === 'published'
+                ? `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Pubblica storia`
+                : `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v14a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Salva bozza`;
+        });
 
         if (story.imgStoria) {
             showCover(story.imgStoria);

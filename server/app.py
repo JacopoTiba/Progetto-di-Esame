@@ -57,6 +57,8 @@ def _serialize_story(storia):
         "descrizione": storia.get("descrizione", ""),
         "contenuto": storia.get("contenuto", ""),
         "genere": storia.get("genere", ""),
+        "tags": storia.get("tags", []),
+        "status": storia.get("status", "draft"),
         "imgStoria": storia.get("imgStoria", ""),
         "capitoli": storia.get("capitoli", 0),
         "nLike": storia.get("nLike", len(liked_by)),
@@ -181,7 +183,8 @@ def get_utente(id):
     if not utente:
         return jsonify({"message": "Utente non trovato"}), 404
 
-    storie_utente = list(storie.find({"idUtente": oid}).sort("_id", -1))
+    # Solo storie pubblicate per profili pubblici
+    storie_utente = list(storie.find({"idUtente": oid, "status": "published"}).sort("_id", -1))
     lista_storie = [_serialize_story(s) for s in storie_utente]
 
     response = _safe_user(utente)
@@ -195,7 +198,8 @@ def get_utente_by_email(email):
     if not utente:
         return jsonify({"message": "Utente non trovato"}), 404
 
-    storie_utente = list(storie.find({"idUtente": utente["_id"]}).sort("_id", -1))
+    # Solo storie pubblicate per profili pubblici
+    storie_utente = list(storie.find({"idUtente": utente["_id"], "status": "published"}).sort("_id", -1))
     lista_storie = [_serialize_story(s) for s in storie_utente]
 
     response = _safe_user(utente)
@@ -310,7 +314,7 @@ def get_storie():
     limit = request.args.get("limit", default=None, type=int)
     skip = request.args.get("skip", default=0, type=int)
 
-    docs = list(storie.find().sort("_id", -1))
+    docs = list(storie.find({"status": "published"}).sort("_id", -1))
     serialized = [_serialize_story(doc) for doc in docs]
 
     if query:
@@ -319,6 +323,7 @@ def get_storie():
             if query in s.get("titolo", "").lower()
             or query in s.get("autore", "").lower()
             or query in s.get("descrizione", "").lower()
+            or any(query in tag.lower() for tag in s.get("tags", []))
         ]
 
     if genre and genre != "all":
@@ -361,6 +366,99 @@ def get_storia(id):
         payload["isLiked"] = False
 
     return jsonify(payload), 200
+
+
+@app.route("/api/storie/mie", methods=["GET"])
+def get_storie_mie():
+    """Restituisce TUTTE le storie (bozze + pubblicate) dell'utente loggato."""
+    email = (request.args.get("email") or "").strip()
+    if not email:
+        return jsonify({"message": "Email obbligatoria"}), 401
+
+    utente = _get_current_user_from_email(email)
+    if not utente:
+        return jsonify({"message": "Utente non trovato"}), 404
+
+    docs = list(storie.find({"idUtente": utente["_id"]}).sort("_id", -1))
+    serialized = [_serialize_story(doc) for doc in docs]
+    return jsonify({"storie": serialized}), 200
+
+
+@app.route("/api/storie/<id>", methods=["PUT"])
+def aggiorna_storia(id):
+    """Aggiorna titolo, sinossi, contenuto, genere, tag, immagine e stato di una storia."""
+    oid = _to_object_id(id)
+    if not oid:
+        return jsonify({"message": "ID storia non valido"}), 400
+
+    storia = storie.find_one({"_id": oid})
+    if not storia:
+        return jsonify({"message": "Storia non trovata"}), 404
+
+    data = request.json or {}
+    email_autore = data.get("autore_email")
+    utente = _get_current_user_from_email(email_autore)
+    if not utente:
+        return jsonify({"message": "Non autorizzato"}), 401
+
+    # Verifica che l'utente loggato sia l'autore della storia
+    if storia.get("idUtente") != utente["_id"]:
+        return jsonify({"message": "Non sei l'autore di questa storia"}), 403
+
+    # Gestione immagine di copertina
+    cover_base64 = data.get("coverBase64")
+    img_url = storia.get("imgStoria", "")
+    if cover_base64 and cover_base64.startswith("data:"):
+        # Nuova immagine in base64 → carica su Cloudinary
+        try:
+            upload_result = cloudinary.uploader.upload(cover_base64)
+            img_url = upload_result.get("secure_url", img_url)
+        except Exception as exc:
+            return jsonify({"message": f"Errore caricamento immagine: {str(exc)}"}), 500
+    elif cover_base64 and cover_base64.startswith("http"):
+        # URL esistente → mantieni
+        img_url = cover_base64
+    elif cover_base64 is None:
+        # Rimosso dall'utente → svuota
+        img_url = ""
+
+    aggiornamenti = {
+        "titolo": data.get("title", storia.get("titolo", "")),
+        "descrizione": data.get("summary", storia.get("descrizione", "")),
+        "contenuto": data.get("content", storia.get("contenuto", "")),
+        "genere": data.get("genre", storia.get("genere", "")),
+        "tags": data.get("tags", storia.get("tags", [])),
+        "status": data.get("status", storia.get("status", "draft")),
+        "imgStoria": img_url,
+    }
+
+    storie.update_one({"_id": oid}, {"$set": aggiornamenti})
+    return jsonify({"message": "Storia aggiornata con successo", "id": str(oid)}), 200
+
+
+@app.route("/api/storie/<id>", methods=["DELETE"])
+def elimina_storia(id):
+    """Elimina una storia (solo l'autore può farlo)."""
+    oid = _to_object_id(id)
+    if not oid:
+        return jsonify({"message": "ID storia non valido"}), 400
+
+    storia = storie.find_one({"_id": oid})
+    if not storia:
+        return jsonify({"message": "Storia non trovata"}), 404
+
+    data = request.json or {}
+    utente = _get_current_user_from_email(data.get("email"))
+    if not utente:
+        return jsonify({"message": "Non autorizzato"}), 401
+
+    if storia.get("idUtente") != utente["_id"]:
+        return jsonify({"message": "Non sei l'autore di questa storia"}), 403
+
+    storie.delete_one({"_id": oid})
+    # Rimuovi dai preferiti di tutti gli utenti
+    credenziali.update_many({}, {"$pull": {"preferiti": oid}})
+    return jsonify({"message": "Storia eliminata con successo"}), 200
 
 
 @app.route("/api/storie/<id>/like", methods=["POST"])

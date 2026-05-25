@@ -1,4 +1,4 @@
-﻿let allBooks = [];
+let allBooks = [];
 let currentQuery = "";
 let currentGenre = "All";
 
@@ -30,6 +30,10 @@ function renderBooks(list) {
   }
 
   list.forEach((storia) => {
+    const tagsHtml = Array.isArray(storia.tags) && storia.tags.length > 0
+      ? `<div class="card-tags">${storia.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>`
+      : '';
+
     const card = `
       <article class="story-card">
         <div class="card-image">
@@ -40,6 +44,7 @@ function renderBooks(list) {
           <h3 class="card-title">${escapeHtml(storia.titolo)}</h3>
           <a href="user.html?id=${storia.idUtente}"><p class="card-author">by ${escapeHtml(storia.autore || "Autore")}</p></a>
           <p class="card-desc">${escapeHtml(storia.descrizione || "Nessuna descrizione disponibile.")}</p>
+          ${tagsHtml}
           <div class="card-meta">
             <span class="meta-item">${escapeHtml(storia.capitoli)} capitoli</span>
             <span class="meta-item">â™¥ ${escapeHtml(storia.nLike)}</span>
@@ -59,11 +64,13 @@ function applyFilters() {
 
   if (currentQuery) {
     const q = currentQuery.toLowerCase();
-    list = list.filter((s) =>
-      (s.titolo || "").toLowerCase().includes(q) ||
-      (s.autore || "").toLowerCase().includes(q) ||
-      (s.descrizione || "").toLowerCase().includes(q)
-    );
+    list = list.filter((s) => {
+      const matchTitleDesc = (s.titolo || "").toLowerCase().includes(q) ||
+                             (s.autore || "").toLowerCase().includes(q) ||
+                             (s.descrizione || "").toLowerCase().includes(q);
+      const matchTags = Array.isArray(s.tags) && s.tags.some(t => t.toLowerCase().includes(q));
+      return matchTitleDesc || matchTags;
+    });
   }
 
   if (currentGenre !== "All") {

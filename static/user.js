@@ -45,6 +45,10 @@ function renderFavorites(preferiti) {
     }
 
     preferiti.forEach((libro) => {
+        const tagsHtml = Array.isArray(libro.tags) && libro.tags.length > 0
+            ? `<div class="card-tags">${libro.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>`
+            : '';
+
         const card = `
             <article class="story-card" onclick="window.location.href='story.html?id=${libro.id}'">
                 <div class="card-thumb">
@@ -55,6 +59,7 @@ function renderFavorites(preferiti) {
                     <h3 class="card-title">${escapeHtml(libro.titolo)}</h3>
                     <p class="card-author">di ${escapeHtml(libro.autore || 'Autore sconosciuto')}</p>
                     <p class="card-desc">${escapeHtml(libro.descrizione || 'Nessuna descrizione disponibile.')}</p>
+                    ${tagsHtml}
                     <div class="card-footer">
                         <a href="story.html?id=${libro.id}" class="btn-read" onclick="event.stopPropagation()">Leggi \u2192</a>
                         <div class="card-stats">
@@ -104,6 +109,10 @@ async function caricaUtente() {
             grid.innerHTML = '<p>Nessuna storia pubblicata.</p>';
         } else {
             utente.storie.forEach((storia) => {
+                const tagsHtml = Array.isArray(storia.tags) && storia.tags.length > 0
+                    ? `<div class="card-tags">${storia.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>`
+                    : '';
+
                 const card = `
                     <article class="story-card" onclick="window.location.href='story.html?id=${storia.id}'">
                         <div class="card-thumb">
@@ -114,6 +123,7 @@ async function caricaUtente() {
                             <h3 class="card-title">${escapeHtml(storia.titolo)}</h3>
                             <p class="card-author">di ${escapeHtml(utente.username)}</p>
                             <p class="card-desc">${escapeHtml(storia.descrizione || 'Nessuna descrizione disponibile.')}</p>
+                            ${tagsHtml}
                             <div class="card-footer">
                                 <a href="story.html?id=${storia.id}" class="btn-read" onclick="event.stopPropagation()">Leggi \u2192</a>
                                 <div class="card-stats">

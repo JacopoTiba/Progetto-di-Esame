@@ -28,32 +28,23 @@ function escapeHtml(value) {
 function renderModalReviews(reviews) {
     const reviewsList = document.getElementById('modalReviewsList');
     const reviewsCount = document.getElementById('modalReviewsCount');
-    const ratingValue = document.getElementById('modalRating');
-    if (!reviewsList || !reviewsCount || !ratingValue) return;
+    if (!reviewsList || !reviewsCount) return;
 
     reviewsList.innerHTML = '';
-    reviewsCount.textContent = `${reviews.length} review${reviews.length === 1 ? '' : 's'}`;
+    reviewsCount.textContent = `${reviews.length} comment${reviews.length === 1 ? 'o' : 'i'}`;
 
     if (!reviews.length) {
-        ratingValue.textContent = '-';
-        reviewsList.innerHTML = '<p class="review-empty">No reviews yet.</p>';
+        reviewsList.innerHTML = '<p class="review-empty">Nessun commento ancora.</p>';
         return;
     }
 
-    const avg = reviews.reduce((acc, r) => acc + Number(r.voto || 0), 0) / reviews.length;
-    ratingValue.textContent = avg.toFixed(1);
-
     reviews.forEach((review) => {
-        const fullStars = Math.max(0, Math.min(5, Number(review.voto || 0)));
-        const stars = `${'â˜…'.repeat(fullStars)}${'â˜†'.repeat(5 - fullStars)}`;
-
         const card = `
             <div class="review-card">
                 <div class="review-header">
                     <div class="review-user">
                         <p class="review-name">${escapeHtml(review.username || 'Utente')}</p>
                     </div>
-                    <div class="review-rating">${stars}</div>
                 </div>
                 <p class="review-text">${escapeHtml(review.testo || '')}</p>
             </div>
@@ -94,6 +85,10 @@ function renderStories(storie, append = false) {
                 ? `<p class="card-author card-author--error">Autore non trovato</p>`
                 : `<a href="user.html?id=${storia.idUtente}"><p class="card-author">by ${escapeHtml(storia.autore)}</p></a>`;
 
+        const tagsHtml = Array.isArray(storia.tags) && storia.tags.length > 0
+            ? `<div class="card-tags">${storia.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>`
+            : '';
+
         const card = `
             <article class="story-card">
                 <div class="card-image">
@@ -104,6 +99,7 @@ function renderStories(storie, append = false) {
                     <h3 class="card-title">${escapeHtml(storia.titolo)}</h3>
                     ${autoreHtml}
                     <p class="card-desc">${escapeHtml(storia.descrizione || 'Nessuna descrizione disponibile.')}</p>
+                    ${tagsHtml}
                     <div class="card-meta">
                         <span class="meta-item">${escapeHtml(storia.capitoli)} capitoli</span>
                         <span class="meta-item">♥ ${escapeHtml(storia.nLike)}</span>
