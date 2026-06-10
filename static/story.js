@@ -223,7 +223,12 @@ async function caricaStoria() {
       autoreEl.removeAttribute("href");
     } else {
       autoreEl.textContent = storia.autore;
-      autoreEl.href = `user.html?id=${storia.idUtente}`;
+      // Se l'autore è l'utente loggato, vai al profilo personale
+      if (user && user.id === storia.idUtente) {
+        autoreEl.href = "personal.html";
+      } else {
+        autoreEl.href = `user.html?id=${storia.idUtente}`;
+      }
     }
 
     const words = (storia.contenuto || "").split(/\s+/).filter(Boolean).length;

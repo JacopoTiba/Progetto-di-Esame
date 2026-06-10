@@ -905,3 +905,207 @@ img {
         padding: 0 1.5rem;
     }
 }
+
+/* ==================== MODAL MODIFICA PROFILO ==================== */
+.edit-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: rgba(74, 55, 40, 0.45);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.edit-modal-overlay.open {
+    opacity: 1;
+}
+
+.edit-modal-overlay.open .edit-modal {
+    transform: translateY(0) scale(1);
+}
+
+.edit-modal {
+    background: var(--cream-light);
+    border-radius: 16px;
+    border: 1.5px solid var(--border-warm);
+    box-shadow: 0 20px 60px rgba(74, 55, 40, 0.2);
+    width: 100%;
+    max-width: 500px;
+    overflow: hidden;
+    transform: translateY(30px) scale(0.97);
+    transition: transform 0.3s cubic-bezier(.22,1,.36,1);
+}
+
+.edit-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 1.8rem;
+    border-bottom: 1.5px solid var(--border-warm);
+    background: rgba(253, 249, 243, 0.9);
+}
+
+.edit-modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-style: italic;
+    color: var(--warm-brown);
+}
+
+.edit-modal-close {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--warm-brown-light);
+    transition: all 0.2s;
+    background: rgba(74, 55, 40, 0.06);
+}
+
+.edit-modal-close:hover {
+    background: rgba(74, 55, 40, 0.12);
+    color: var(--warm-brown);
+}
+
+.edit-modal-body {
+    padding: 1.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Avatar section */
+.edit-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.edit-avatar-preview {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border-radius: 12px;
+    border: 2.5px solid var(--gold);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.edit-avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: filter 0.25s ease;
+}
+
+.edit-avatar-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(74, 55, 40, 0.55);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: white;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.edit-avatar-overlay span {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.edit-avatar-preview:hover img {
+    filter: brightness(0.7);
+}
+
+.edit-avatar-preview:hover .edit-avatar-overlay {
+    opacity: 1;
+}
+
+.edit-avatar-hint {
+    font-size: 0.75rem;
+    color: var(--warm-brown-light);
+    font-style: italic;
+    text-align: center;
+}
+
+/* Fields */
+.edit-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.edit-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--warm-brown-light);
+}
+
+.edit-textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 0.85rem 1rem;
+    border: 1.5px solid var(--border-warm);
+    border-radius: 10px;
+    background: rgba(250, 244, 235, 0.6);
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    color: var(--warm-brown);
+    line-height: 1.6;
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.edit-textarea:focus {
+    border-color: var(--gold-soft);
+    box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.12);
+    background: white;
+}
+
+.edit-char-count {
+    font-size: 0.72rem;
+    color: var(--warm-brown-light);
+    text-align: right;
+}
+
+/* Footer */
+.edit-modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding: 1.2rem 1.8rem;
+    border-top: 1.5px solid var(--border-warm);
+    background: rgba(250, 244, 235, 0.5);
+}
+
+@media (max-width: 600px) {
+    .edit-modal {
+        max-width: 100%;
+        border-radius: 12px 12px 0 0;
+    }
+
+    .edit-modal-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+}

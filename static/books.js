@@ -2,6 +2,18 @@ let allBooks = [];
 let currentQuery = "";
 let currentGenre = "All";
 
+function getCurrentUser() {
+    const match = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('utente='));
+    if (!match) return null;
+    try {
+        return JSON.parse(decodeURIComponent(match.split('=').slice(1).join('=')));
+    } catch {
+        return null;
+    }
+}
+
 function escapeHtml(value) {
   return String(value || "")
     .replaceAll("&", "&amp;")
@@ -29,10 +41,19 @@ function renderBooks(list) {
     return;
   }
 
+  const currentUser = getCurrentUser();
+
   list.forEach((storia) => {
     const tagsHtml = Array.isArray(storia.tags) && storia.tags.length > 0
       ? `<div class="card-tags">${storia.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>`
       : '';
+
+    let autoreHtml;
+    if (currentUser && currentUser.id === storia.idUtente) {
+        autoreHtml = `<a href="personal.html"><p class="card-author">by ${escapeHtml(storia.autore || "Autore")}</p></a>`;
+    } else {
+        autoreHtml = `<a href="user.html?id=${storia.idUtente}"><p class="card-author">by ${escapeHtml(storia.autore || "Autore")}</p></a>`;
+    }
 
     const card = `
       <article class="story-card">
@@ -42,12 +63,12 @@ function renderBooks(list) {
         </div>
         <div class="card-body">
           <h3 class="card-title">${escapeHtml(storia.titolo)}</h3>
-          <a href="user.html?id=${storia.idUtente}"><p class="card-author">by ${escapeHtml(storia.autore || "Autore")}</p></a>
+          ${autoreHtml}
           <p class="card-desc">${escapeHtml(storia.descrizione || "Nessuna descrizione disponibile.")}</p>
           ${tagsHtml}
           <div class="card-meta">
             <span class="meta-item">${escapeHtml(storia.capitoli)} capitoli</span>
-            <span class="meta-item">â™¥ ${escapeHtml(storia.nLike)}</span>
+            <span class="meta-item">♥ ${escapeHtml(storia.nLike)}</span>
           </div>
           <div class="card-actions">
             <a href="story.html?id=${storia.id}" class="btn-read">Read</a>

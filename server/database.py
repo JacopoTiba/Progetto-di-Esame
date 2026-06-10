@@ -12,3 +12,7 @@ db = client.get_database(os.getenv("DB_NAME", "Plotty"))
 credenziali = db.credenziali
 storie = db.storie
 recensioni = db.recensioni
+
+# Nuove collezioni per la chat privata
+conversazioni = db.conversazioni
+messaggi = db.messaggi

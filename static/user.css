@@ -885,3 +885,27 @@ img {
         padding: 0 1.5rem;
     }
 }
+
+/* ==================== PULSANTE SEGUITO ==================== */
+.btn-primary.btn-following {
+    background: transparent;
+    color: var(--warm-brown);
+    border-color: var(--gold);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary.btn-following::before {
+    content: '✓ ';
+    font-size: 0.8em;
+}
+
+.btn-primary.btn-following:hover {
+    background: rgba(220, 70, 70, 0.08);
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+.btn-primary.btn-following:hover::before {
+    content: '✕ ';
+}

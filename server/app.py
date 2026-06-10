@@ -1,5 +1,6 @@
 from datetime import datetime
 import os
+import re
 
 from bson import ObjectId
 from bson.errors import InvalidId
@@ -11,7 +12,7 @@ import cloudinary
 import cloudinary.uploader
 
 from .auth import genera_codice, invia_mail_codice
-from .database import credenziali, recensioni, storie
+from .database import credenziali, recensioni, storie, conversazioni, messaggi
 
 load_dotenv()
 
@@ -40,6 +41,8 @@ def _safe_user(utente):
         "cognome": utente.get("cognome", ""),
         "username": utente.get("username", ""),
         "email": utente.get("email", ""),
+        "bio": utente.get("bio", ""),
+        "avatar": utente.get("avatar", ""),
         "followersCount": len(utente.get("followers", [])),
         "followingCount": len(utente.get("following", [])),
     }
@@ -189,7 +192,95 @@ def get_utente(id):
 
     response = _safe_user(utente)
     response["storie"] = lista_storie
+
+    # Verifica se l'utente loggato segue già questo profilo
+    viewer_email = request.args.get("email")
+    if viewer_email:
+        viewer = _get_current_user_from_email(viewer_email)
+        if viewer:
+            followers = utente.get("followers", [])
+            response["isFollowing"] = viewer["_id"] in followers
+        else:
+            response["isFollowing"] = False
+    else:
+        response["isFollowing"] = False
+
     return jsonify(response), 200
+
+
+@app.route("/api/utenti/<id>", methods=["PUT"])
+def aggiorna_utente(id):
+    """Aggiorna bio e/o avatar dell'utente."""
+    oid = _to_object_id(id)
+    if not oid:
+        return jsonify({"message": "ID utente non valido"}), 400
+
+    utente = credenziali.find_one({"_id": oid})
+    if not utente:
+        return jsonify({"message": "Utente non trovato"}), 404
+
+    data = request.json or {}
+    email = data.get("email")
+    current_user = _get_current_user_from_email(email)
+    if not current_user or current_user["_id"] != oid:
+        return jsonify({"message": "Non autorizzato"}), 401
+
+    aggiornamenti = {}
+
+    # Aggiorna la bio se fornita
+    if "bio" in data:
+        aggiornamenti["bio"] = data["bio"]
+
+    # Aggiorna l'avatar se fornito come base64
+    avatar_base64 = data.get("avatarBase64")
+    if avatar_base64:
+        if avatar_base64.startswith("data:"):
+            try:
+                upload_result = cloudinary.uploader.upload(avatar_base64)
+                aggiornamenti["avatar"] = upload_result.get("secure_url", "")
+            except Exception as exc:
+                return jsonify({"message": f"Errore caricamento avatar: {str(exc)}"}), 500
+        elif avatar_base64.startswith("http"):
+            aggiornamenti["avatar"] = avatar_base64
+
+    if not aggiornamenti:
+        return jsonify({"message": "Nessun dato da aggiornare"}), 400
+
+    credenziali.update_one({"_id": oid}, {"$set": aggiornamenti})
+    updated = credenziali.find_one({"_id": oid})
+    return jsonify({"message": "Profilo aggiornato con successo", "user": _safe_user(updated)}), 200
+
+
+@app.route("/api/utenti/cerca", methods=["GET"])
+def cerca_utenti():
+    """Cerca utenti per username (ricerca parziale, case-insensitive). Esclude l'utente loggato."""
+    q = (request.args.get("q") or "").strip()
+    email_corrente = (request.args.get("email") or "").strip()
+
+    if not q or len(q) < 2:
+        return jsonify({"utenti": []}), 200
+
+    # Ricerca con regex case-insensitive
+    pattern = re.compile(re.escape(q), re.IGNORECASE)
+    docs = list(credenziali.find(
+        {"username": {"$regex": pattern}, "verificato": True},
+        {"_id": 1, "username": 1, "nome": 1, "cognome": 1, "avatar": 1, "email": 1}
+    ).limit(10))
+
+    # Escludi l'utente corrente
+    result = []
+    for u in docs:
+        if u.get("email") == email_corrente:
+            continue
+        result.append({
+            "id":       str(u["_id"]),
+            "username": u.get("username", ""),
+            "nome":     u.get("nome", ""),
+            "cognome":  u.get("cognome", ""),
+            "avatar":   u.get("avatar", ""),
+        })
+
+    return jsonify({"utenti": result}), 200
 
 
 @app.route("/api/utenti/email/<path:email>", methods=["GET"])
@@ -267,6 +358,19 @@ def get_preferiti(id):
 
 
 # --- ROTTE CONTENUTI ---
+@app.route("/api/generi", methods=["GET"])
+def get_generi():
+    """Restituisce tutti i generi distinti dalle storie pubblicate."""
+    pipeline = [
+        {"$match": {"status": "published", "genere": {"$ne": ""}}},
+        {"$group": {"_id": "$genere"}},
+        {"$sort": {"_id": 1}},
+    ]
+    docs = list(storie.aggregate(pipeline))
+    generi = [doc["_id"] for doc in docs if doc["_id"]]
+    return jsonify({"generi": generi}), 200
+
+
 @app.route("/api/storie", methods=["POST"])
 def crea_storia():
     data = request.json or {}
@@ -572,8 +676,191 @@ def add_recensione(id):
     return jsonify({"message": "Commento aggiunto", "id": str(res.inserted_id)}), 201
 
 
+# ─────────────────────────────────────────────
+# ROTTE CHAT PRIVATA
+# ─────────────────────────────────────────────
+
+@app.route("/api/conversazioni", methods=["GET"])
+def get_conversazioni():
+    """Restituisce tutte le conversazioni dell'utente loggato."""
+    email = (request.args.get("email") or "").strip()
+    if not email:
+        return jsonify({"message": "Email obbligatoria"}), 401
+
+    utente = _get_current_user_from_email(email)
+    if not utente:
+        return jsonify({"message": "Utente non trovato"}), 404
+
+    user_oid = utente["_id"]
+
+    # Trova tutte le conversazioni in cui l'utente è partecipante
+    docs = list(conversazioni.find({"partecipanti": user_oid}).sort("ultimoMessaggioAt", -1))
+
+    result = []
+    for conv in docs:
+        partecipanti_ids = conv.get("partecipanti", [])
+        # Trova l'altro partecipante
+        altro_id = next((p for p in partecipanti_ids if p != user_oid), None)
+        altro_utente = credenziali.find_one({"_id": altro_id}) if altro_id else None
+
+        result.append({
+            "id": str(conv["_id"]),
+            "altroUtente": {
+                "id": str(altro_utente["_id"]) if altro_utente else "",
+                "username": altro_utente.get("username", "Utente") if altro_utente else "Utente",
+                "avatar": altro_utente.get("avatar", "") if altro_utente else "",
+            },
+            "ultimoMessaggio": conv.get("ultimoMessaggio", ""),
+            "ultimoMessaggioAt": conv.get("ultimoMessaggioAt").isoformat() if conv.get("ultimoMessaggioAt") else None,
+            "nonLetti": conv.get(f"nonLetti_{str(user_oid)}", 0),
+        })
+
+    return jsonify({"conversazioni": result}), 200
+
+
+@app.route("/api/conversazioni", methods=["POST"])
+def ottieni_o_crea_conversazione():
+    """Trova o crea una conversazione privata tra due utenti."""
+    data = request.json or {}
+    email_mittente = data.get("email")
+    id_destinatario = data.get("destinatarioId")
+
+    mittente = _get_current_user_from_email(email_mittente)
+    if not mittente:
+        return jsonify({"message": "Non autenticato"}), 401
+
+    dest_oid = _to_object_id(id_destinatario)
+    if not dest_oid:
+        return jsonify({"message": "ID destinatario non valido"}), 400
+
+    destinatario = credenziali.find_one({"_id": dest_oid})
+    if not destinatario:
+        return jsonify({"message": "Destinatario non trovato"}), 404
+
+    if mittente["_id"] == dest_oid:
+        return jsonify({"message": "Non puoi chattare con te stesso"}), 400
+
+    # Cerca conversazione esistente tra i due (indipendente dall'ordine)
+    conv = conversazioni.find_one({
+        "partecipanti": {"$all": [mittente["_id"], dest_oid]}
+    })
+
+    if not conv:
+        # Crea nuova conversazione
+        nuovo = {
+            "partecipanti": [mittente["_id"], dest_oid],
+            "ultimoMessaggio": "",
+            "ultimoMessaggioAt": datetime.utcnow(),
+            f"nonLetti_{str(mittente['_id'])}": 0,
+            f"nonLetti_{str(dest_oid)}": 0,
+        }
+        res = conversazioni.insert_one(nuovo)
+        conv_id = str(res.inserted_id)
+    else:
+        conv_id = str(conv["_id"])
+
+    return jsonify({"conversazioneId": conv_id}), 200
+
+
+@app.route("/api/conversazioni/<conv_id>/messaggi", methods=["GET"])
+def get_messaggi(conv_id):
+    """Restituisce i messaggi di una conversazione (con paginazione)."""
+    conv_oid = _to_object_id(conv_id)
+    if not conv_oid:
+        return jsonify({"message": "ID conversazione non valido"}), 400
+
+    conv = conversazioni.find_one({"_id": conv_oid})
+    if not conv:
+        return jsonify({"message": "Conversazione non trovata"}), 404
+
+    # Verifica che l'utente sia partecipante
+    email = (request.args.get("email") or "").strip()
+    utente = _get_current_user_from_email(email)
+    if not utente or utente["_id"] not in conv.get("partecipanti", []):
+        return jsonify({"message": "Non autorizzato"}), 403
+
+    # Paginazione: ultimi N messaggi
+    limit = request.args.get("limit", default=50, type=int)
+    skip = request.args.get("skip", default=0, type=int)
+
+    docs = list(
+        messaggi.find({"conversazioneId": conv_oid})
+        .sort("createdAt", 1)
+        .skip(skip)
+        .limit(limit)
+    )
+
+    payload = []
+    for doc in docs:
+        payload.append({
+            "id": str(doc["_id"]),
+            "mittenteId": str(doc.get("mittenteId", "")),
+            "mittenteUsername": doc.get("mittenteUsername", "Utente"),
+            "mittenteAvatar": doc.get("mittenteAvatar", ""),
+            "testo": doc.get("testo", ""),
+            "createdAt": doc.get("createdAt").isoformat() if doc.get("createdAt") else None,
+        })
+
+    # Azzera i messaggi non letti per questo utente
+    campo_non_letti = f"nonLetti_{str(utente['_id'])}"
+    conversazioni.update_one({"_id": conv_oid}, {"$set": {campo_non_letti: 0}})
+
+    return jsonify({"messaggi": payload}), 200
+
+
+@app.route("/api/conversazioni/<conv_id>/messaggi", methods=["POST"])
+def invia_messaggio(conv_id):
+    """Invia un messaggio in una conversazione privata."""
+    conv_oid = _to_object_id(conv_id)
+    if not conv_oid:
+        return jsonify({"message": "ID conversazione non valido"}), 400
+
+    conv = conversazioni.find_one({"_id": conv_oid})
+    if not conv:
+        return jsonify({"message": "Conversazione non trovata"}), 404
+
+    data = request.json or {}
+    mittente = _get_current_user_from_email(data.get("email"))
+    if not mittente or mittente["_id"] not in conv.get("partecipanti", []):
+        return jsonify({"message": "Non autorizzato"}), 403
+
+    testo = (data.get("testo") or "").strip()
+    if not testo:
+        return jsonify({"message": "Il messaggio non può essere vuoto"}), 400
+
+    now = datetime.utcnow()
+    nuovo_msg = {
+        "conversazioneId": conv_oid,
+        "mittenteId": mittente["_id"],
+        "mittenteUsername": mittente.get("username", "Utente"),
+        "mittenteAvatar": mittente.get("avatar", ""),
+        "testo": testo,
+        "createdAt": now,
+    }
+    res = messaggi.insert_one(nuovo_msg)
+
+    # Aggiorna la conversazione con ultimo messaggio e incrementa non letti per l'altro
+    partecipanti_ids = conv.get("partecipanti", [])
+    altro_id = next((p for p in partecipanti_ids if p != mittente["_id"]), None)
+    update_fields = {
+        "ultimoMessaggio": testo[:80],
+        "ultimoMessaggioAt": now,
+    }
+    if altro_id:
+        update_fields[f"nonLetti_{str(altro_id)}"] = conv.get(f"nonLetti_{str(altro_id)}", 0) + 1
+
+    conversazioni.update_one({"_id": conv_oid}, {"$set": update_fields})
+
+    return jsonify({
+        "message": "Messaggio inviato",
+        "id": str(res.inserted_id),
+        "createdAt": now.isoformat(),
+    }), 201
+
+
+
 if __name__ == "__main__":
     # Prende la porta dal file .env, altrimenti usa la 3000
     port = int(os.getenv("PORT", 3000))
-    print(f"--- Avvio server in HTTPS su https://127.0.0.1:{port} ---")
-    app.run(debug=True, host="0.0.0.0", port=port, ssl_context='adhoc')
+    print(f"--- Avvio server su http://127.0.0.1:{port} ---")
+    app.run(debug=True, host="0.0.0.0", port=port)

@@ -176,6 +176,47 @@ img {
     background: rgba(74, 55, 40, 0.15);
 }
 
+.nav-avatar-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+.btn-avatar:has(.nav-avatar-img) {
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid var(--gold-soft);
+}
+
+.btn-avatar:has(.nav-avatar-img):hover {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(201, 169, 110, 0.2);
+}
+
+/* Bottone Logout nella navbar */
+.btn-logout {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--warm-brown-light);
+    padding: 6px 13px;
+    border-radius: 999px;
+    border: 1.5px solid var(--border-warm);
+    background: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+.btn-logout:hover {
+    color: #c0392b;
+    border-color: rgba(192, 57, 43, 0.4);
+    background: rgba(192, 57, 43, 0.06);
+}
+
 /* ---------- Hero Banner ---------- */
 .hero {
     position: relative;

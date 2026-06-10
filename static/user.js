@@ -31,6 +31,18 @@ function bindSearch() {
     });
 }
 
+function updateFollowButton(btn, isFollowing) {
+    if (isFollowing) {
+        btn.textContent = 'Seguito';
+        btn.classList.add('btn-following');
+        btn.title = 'Clicca per smettere di seguire';
+    } else {
+        btn.textContent = 'Segui';
+        btn.classList.remove('btn-following');
+        btn.title = '';
+    }
+}
+
 function renderFavorites(preferiti) {
     const favGrid = document.getElementById('favoritesGrid');
     const favCount = document.getElementById('favCount');
@@ -85,14 +97,34 @@ async function caricaUtente() {
 
     const currentUser = getCurrentUser();
 
+    // Se l'utente sta guardando il proprio profilo, reindirizza a personal.html
+    if (currentUser && currentUser.id === id) {
+        window.location.href = 'personal.html';
+        return;
+    }
+
     try {
-        const res = await fetch(`/api/utenti/${id}`);
+        // Passa l'email dell'utente loggato per sapere se già segue questo profilo
+        const emailParam = currentUser?.email ? `?email=${encodeURIComponent(currentUser.email)}` : '';
+        const res = await fetch(`/api/utenti/${id}${emailParam}`);
         if (!res.ok) throw new Error('Utente non trovato');
 
         const utente = await res.json();
         document.title = `Plotty \u2013 ${utente.username}`;
         document.querySelector('.profile-handle').textContent = `@${utente.username}`;
         document.querySelector('.profile-name').innerHTML = `${utente.nome} <em>${utente.cognome}</em>`;
+
+        // Aggiorna bio
+        const bioEl = document.querySelector('.profile-bio');
+        if (bioEl) {
+            bioEl.textContent = utente.bio || '';
+        }
+
+        // Aggiorna avatar
+        const avatarImg = document.querySelector('.profile-avatar img');
+        if (avatarImg && utente.avatar) {
+            avatarImg.src = utente.avatar;
+        }
 
         const stats = document.querySelectorAll('.profile-stats .stat-num');
         if (stats.length >= 3) {
@@ -143,12 +175,17 @@ async function caricaUtente() {
                 followBtn.textContent = 'Questo sei tu';
                 followBtn.disabled = true;
             } else {
-                followBtn.textContent = 'Segui';
-                followBtn.onclick = async () => {
+                // Usa il valore isFollowing restituito dall'API
+                let isFollowing = utente.isFollowing || false;
+                updateFollowButton(followBtn, isFollowing);
+
+                followBtn.addEventListener('click', async () => {
                     if (!currentUser?.email) {
                         alert('Devi fare login per seguire utenti.');
                         return;
                     }
+
+                    followBtn.disabled = true;
 
                     const followRes = await fetch(`/api/utenti/${utente.id}/follow`, {
                         method: 'POST',
@@ -156,17 +193,34 @@ async function caricaUtente() {
                         body: JSON.stringify({ email: currentUser.email }),
                     });
 
+                    followBtn.disabled = false;
+
                     if (!followRes.ok) {
                         alert('Errore nel follow/unfollow.');
                         return;
                     }
 
                     const followData = await followRes.json();
-                    followBtn.textContent = followData.isFollowing ? 'Seguito' : 'Segui';
+                    isFollowing = followData.isFollowing;
+                    updateFollowButton(followBtn, isFollowing);
+
                     if (stats.length >= 3) {
                         stats[1].textContent = followData.followersCount;
                     }
-                };
+                });
+            }
+        }
+
+        // ── Bottone Messaggia ──
+        const msgBtn = document.getElementById('btnMessage');
+        if (msgBtn) {
+            if (!currentUser || currentUser.id === utente.id) {
+                // Nascondi il bottone se non loggato o se si guarda il proprio profilo
+                msgBtn.style.display = 'none';
+            } else {
+                msgBtn.addEventListener('click', () => {
+                    window.location.href = `chat.html?con=${utente.id}`;
+                });
             }
         }
 

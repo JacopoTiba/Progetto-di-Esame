@@ -80,10 +80,15 @@ function renderStories(storie, append = false) {
     }
 
     storie.forEach((storia) => {
-        const autoreHtml =
-            storia.autore === 'Autore sconosciuto'
-                ? `<p class="card-author card-author--error">Autore non trovato</p>`
-                : `<a href="user.html?id=${storia.idUtente}"><p class="card-author">by ${escapeHtml(storia.autore)}</p></a>`;
+        const currentUser = getCurrentUser();
+        let autoreHtml;
+        if (storia.autore === 'Autore sconosciuto') {
+            autoreHtml = `<p class="card-author card-author--error">Autore non trovato</p>`;
+        } else if (currentUser && currentUser.id === storia.idUtente) {
+            autoreHtml = `<a href="personal.html"><p class="card-author">by ${escapeHtml(storia.autore)}</p></a>`;
+        } else {
+            autoreHtml = `<a href="user.html?id=${storia.idUtente}"><p class="card-author">by ${escapeHtml(storia.autore)}</p></a>`;
+        }
 
         const tagsHtml = Array.isArray(storia.tags) && storia.tags.length > 0
             ? `<div class="card-tags">${storia.tags.map(t => `<span class="tag-pill">#${escapeHtml(t)}</span>`).join('')}</div>`
@@ -242,12 +247,38 @@ function bindModalClose() {
     });
 }
 
+async function loadGenres() {
+    const container = document.getElementById('genreTags');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/generi');
+        if (!res.ok) return;
+        const data = await res.json();
+        const generi = data.generi || [];
+
+        generi.forEach((genere) => {
+            const btn = document.createElement('button');
+            btn.className = 'tag';
+            btn.textContent = genere;
+            container.appendChild(btn);
+        });
+
+        // Bind dei filtri dopo aver aggiunto i generi
+        bindGenreFilters();
+    } catch (err) {
+        console.error('Errore caricamento generi:', err);
+        // Fallback: bind comunque i filtri esistenti
+        bindGenreFilters();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     getCurrentUser();
     bindSearchToBooksPage();
-    bindGenreFilters();
     bindModalClose();
     bindInfiniteScroll();
+    loadGenres();
     caricaStorie(true);
 });
 
